@@ -46,7 +46,8 @@
     "test:catalog": "node scripts/test-catalog.cjs",
     "test:destinations": "node scripts/test-destinations.cjs",
     "test:favorites": "node scripts/test-favorites.cjs",
-    "test:deletion": "node scripts/test-deletion.cjs"
+    "test:deletion": "node scripts/test-deletion.cjs",
+    "test:orientation": "node scripts/test-orientation.cjs"
   },
   "private": true
 }

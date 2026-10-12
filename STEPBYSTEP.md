@@ -229,16 +229,16 @@ Repetir estas comprobaciones en cada paso que cambie código; registrar resultad
 
 **Resultado esperado:** cálculo matemático independiente de UI y sensores.
 
-- [ ] Crear función pura de bearing desde origen/destino geográficos.
-- [ ] Crear función pura de ángulo relativo entre bearing y heading.
-- [ ] Documentar grados/radianes, normalización y sentido de rotación de la flecha.
-- [ ] Validar valores finitos y rangos donde corresponda.
-- [ ] Comprobar casos norte, este, sur y oeste con coordenadas conocidas.
-- [ ] Comprobar cruce 359°/0° y rotaciones negativas/equivalentes.
-- [ ] Definir tratamiento de posición coincidente/cercana sin dirección inventada.
-- [ ] Comprobar que el rumbo usado y el heading comparten referencia norte coherente.
-- [ ] Añadir pruebas significativas de las funciones puras y ejecutarlas.
-- [ ] Completar la verificación común de entrega.
+- [x] Crear función pura de bearing desde origen/destino geográficos.
+- [x] Crear función pura de ángulo relativo entre bearing y heading.
+- [x] Documentar grados/radianes, normalización y sentido de rotación de la flecha.
+- [x] Validar valores finitos y rangos donde corresponda.
+- [x] Comprobar casos norte, este, sur y oeste con coordenadas conocidas.
+- [x] Comprobar cruce 359°/0° y rotaciones negativas/equivalentes.
+- [x] Definir tratamiento de posición coincidente/cercana sin dirección inventada.
+- [x] Comprobar que el rumbo usado y el heading comparten referencia norte coherente.
+- [x] Añadir pruebas significativas de las funciones puras y ejecutarlas.
+- [x] Completar la verificación común de entrega.
 
 ## Paso 12 — Ubicación bajo demanda
 
@@ -603,3 +603,31 @@ Se marca el check restante de Flexbox en dos tamaños: **paso 2, 10/10 completo*
 **Defensa/recuperación:** confirmación → contexto con sesión y bloqueo común → servicio con ownership → registro pendiente validado → favoritos → destinos → retirar registro → estado compartido → Lugares. Es un protocolo recuperable entre claves, no una transacción atómica: puede existir estado parcial en disco mientras haya registro, pero la app no habilita navegación antes de completar recuperación. Una promesa rechazada después de guardar también devuelve error y exige lectura. Si el registro no se persistió, la lectura conserva el destino y permite repetir. Registro inválido se preserva y bloquea la carga.
 
 **Límites:** fallos físicos de AsyncStorage y recorrido visual de recuperación no se provocaron; se acreditan con el servicio real y adaptador controlado. Reload reinició JS, no terminó el proceso del sistema. No se acreditan los 16 escenarios finales completos ni prueba física del iPhone 14 Pro; sensores siguen en paso 13. La entrega queda disponible para revisión.
+
+
+### 12 de octubre de 2026 — Paso 11: cálculo de orientación y auditoría
+
+**10/10 checks auditados y marcados.** Implementación limitada a matemática pura; no se inició ubicación ni sensores. Checks comunes globales conservados como plantilla. El usuario autorizó auditoría, marcado y commit/push.
+
+**Archivos:** nuevo `src/features/compass/orientation.ts`, nuevo `scripts/test-orientation.cjs`, comando `test:orientation` en package.json, README y esta lista. Sin dependencias, UI ni almacenamiento nuevos.
+
+| Check | Evidencia |
+| --- | --- |
+| Bearing puro | `calculateBearing`: rumbo inicial de círculo máximo mediante atan2, sin estado, UI ni sensores |
+| Ángulo relativo puro | `calculateRelativeAngle`: bearing menos trueHeading, resultado [-180, 180) |
+| Unidades/normalización/rotación | Comentarios documentan entradas en grados, trigonometría en radianes, norte=0, derecha positiva, izquierda negativa y detrás=-180 |
+| Valores/rangos | Coordenadas finitas ±90/±180; precisión finita no negativa; heading verdadero [0,360), rechaza -1; normalización acepta vueltas equivalentes |
+| Cardinales | Desde (0,0) hacia (±1,0)/(0,±1): 0/90/180/270; pruebas ejecutadas |
+| Cruce norte y equivalencias | 0−359=+1, 359−0=−1; ángulos negativos y vueltas múltiples; 576 combinaciones reconstruyen bearing |
+| Coincidencia/cercanía | null dentro de max(1 metro, precisión de posición); también antípodas sin rumbo único y mismo polo con distintas longitudes; tests |
+| Norte coherente | Bearing geográfico usa norte verdadero; contrato exige trueHeading y prohíbe sustituir norte magnético sin corrección de declinación. Disponibilidad/calidad real quedan para paso 13 |
+| Pruebas significativas | Cardinales, caso esférico analítico no plano, antimeridiano, cercanía/precisión, antípodas, valores inválidos, giros y propiedad de reconstrucción |
+| Verificación común | Reglas leídas, alcance puro y tipos explícitos; errores en español; loading/accesibilidad/cancelación/persistencia no aplican a funciones síncronas sin UI. Tipos/lint/todas las suites y diff ejecutados; inspección manual de resultados en Node; documentación de defensa y límites; entrega para revisión sin avanzar |
+
+**Comandos:** `npx tsc --noEmit`, `npm run lint`, `npm run test:orientation`, `npm run test:auth` (18/18), `npm run test:catalog`, `npm run test:destinations`, `npm run test:favorites`, `npm run test:deletion` y `git diff --check`: exit 0. La primera ejecución de orientación detectó un valor esperado incorrecto en un ejemplo numérico; se sustituyó por un caso esférico con solución analítica independiente (45°,0°)→(0°,90°), rumbo inicial 90°. La suite corregida pasó.
+
+**Comprobación manual:** ejecución directa de las funciones reales en Node: norte=0°, cruce 359°→0°=+1°, destino dentro de precisión= null y heading -1 produce RangeError en español. Sin recorrido de pantalla porque este incremento no cambia UI. No se acredita prueba de GPS/heading real ni ejecución en teléfono.
+
+**Defensa:** coordenadas → validación → distancia haversine y umbral de precisión → rumbo inicial respecto de norte verdadero → resta de heading verdadero → giro firmado para flecha. Null impide inventar dirección cercana o indefinida. La futura capa de sensores debe verificar calidad/disponibilidad antes de llamar estas funciones y proporcionar precisión GPS; aún no está conectada. La esfera terrestre es una aproximación apropiada para orientación académica, sin navegación vial ni precisión UWB.
+
+**Pendiente:** permiso/ubicación en paso 12, heading/flecha y prueba física iPhone 14 Pro en paso 13, aceptación final en paso 14. Entrega disponible para revisión.
