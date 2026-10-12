@@ -1,56 +1,132 @@
-# Welcome to your Expo app 👋
+# TP integrador — Turismo en Buenos Aires
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicación académica de turismo con Expo, React Native y TypeScript, orientada a funcionar en Expo Go. La demostración tendrá preferencia por iOS.
 
-## Get started
+## Estado actual
 
-1. Install dependencies
+El paso 2 incorpora un Stack de Expo Router con Login, Registro, Lugares, Detalles, Formulario y Brújula. El paso 3 agrega registro local real: formulario validado, guardado de cuenta y sesión, y entrada automática a Lugares al registrarse. El paso 4 agrega Login/logout, restauración de sesión y rutas protegidas. El paso 5 incorpora los 20 destinos locales en una FlatList y el paso 6 permite seleccionar un lugar y consultar sus detalles reales. El paso 7 agrega destinos propios con validación, persistencia y aislamiento por cuenta. El paso 8 permite editar destinos propios desde Detalles, con guardado persistente y validación de propiedad. Las funcionalidades siguientes todavía no están implementadas:
 
-   ```bash
-   npm install
-   ```
+- Favoritos por usuario integrados en la lista del catálogo.
+- Eliminación de destinos propios.
+- Favoritos persistentes; las cuentas, sesiones y destinos propios ya se guardan en AsyncStorage.
+- Pantalla de brújula con orientación aproximada hacia un destino.
 
-2. Start the app
+La interfaz y este README están en español. Perfil e internacionalización quedan fuera de la primera versión.
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Instalación y ejecución
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Abrir el proyecto en Expo Go compatible con el SDK instalado. TypeScript, lint, Expo Doctor y la compilación del bundle iOS se verificaron el 11 de octubre de 2026. También se verificó visualmente Home → Explore → Home en Expo Go 57.0.9 del simulador iOS 27. La ejecución en el iPhone 14 Pro físico sigue pendiente; ver resultados en STEPBYSTEP.md.
 
-### Other setup steps
+Validaciones del proyecto:
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```bash
+npx tsc --noEmit
+npm run lint
+```
 
-## Learn more
+## Estructura actual y documentación
 
-To learn more about developing your project with Expo, look at the following resources:
+- `src/app/`: rutas y Stack del TP (`_layout.tsx`); Login corresponde a `index.tsx`.
+- `src/components/`, `src/hooks/`, `src/constants/`: componentes, hooks y estilos existentes.
+- [REQUIREMENTS.md](./REQUIREMENTS.md): requisitos, decisiones y escenarios de aceptación.
+- [FLOWS.md](./FLOWS.md): navegación y comportamiento de cada acción.
+- [AGENTS.md](./AGENTS.md): convenciones y reglas de desarrollo.
+- [STEPBYSTEP.md](./STEPBYSTEP.md): checklist detallado por incremento y resultados de verificación.
+- [PLACES.md](./PLACES.md): los 20 lugares seleccionados, coordenadas y fuentes.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+La estructura se actualizará a medida que se implementen las features, sin crear carpetas vacías.
 
-## Join the community
+## Dependencias y decisiones
 
-Join our community of developers creating universal apps.
+El proyecto ya incluye Expo, React Native, TypeScript y Expo Router; este último permite conservar la navegación basada en rutas. Se añadieron `@react-native-async-storage/async-storage` 2.2.0 para cuentas/sesión local y `expo-crypto` ~57.0.4 para UUID, salt aleatorio y verificador SHA-256. Se instalaron con `npx expo install`. Ambas están incluidas en Expo Go según la documentación oficial de [AsyncStorage](https://docs.expo.dev/versions/latest/sdk/async-storage/) y [Crypto](https://docs.expo.dev/versions/latest/sdk/crypto/). `expo-location` se incorporará en el paso de ubicación.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+No se implementarán backend, mapas en línea ni sincronización. Las cuentas y datos pertenecerán a una instalación local y no se compartirán automáticamente entre dispositivos. No se almacenan contraseñas en texto plano: se guarda un verificador SHA-256 de salt + contraseña. Es una demostración educativa, no autenticación de producción ni una función de derivación lenta para proteger contraseñas reales; usar credenciales ficticias.
+
+## Desarrollo y demostración
+
+Se trabajará por features pequeñas, con persistencia integrada desde cada operación mutable y revisión de cada entrega antes de avanzar. Los favoritos aparecerán primero, manteniendo el orden base dentro de cada grupo. La brújula tendrá una pantalla dedicada y solicitará permisos al iniciar la orientación.
+
+La orientación deberá probarse en un iPhone físico; el simulador no reemplaza los sensores reales. El dispositivo confirmado es un iPhone 14 Pro; la prueba física de sensores se realizará en el paso 13. Se ignoran las fechas de 2025 de la consigna; no hay un cronograma vigente fijado en este README.
+
+## Uso de inteligencia artificial
+
+Se utilizó Codex para elaborar y revisar la especificación, alinear los flujos y recopilar el catálogo con fuentes enlazadas. También se utilizó para implementar y verificar la navegación mínima del paso 2 y el registro local y sus pruebas del paso 3, además de Login/logout, restauración, protección de rutas y auditoría del paso 4, el catálogo, selector por usuario y verificación del paso 5, y Detalles con resolución autorizada de IDs, navegación y auditoría del paso 6, y creación de destinos, recuperación de errores, pruebas y auditoría del paso 7, además de edición y auditoría del paso 8. El usuario revisa las decisiones y los incrementos. Esta sección se actualizará para reflejar la asistencia utilizada durante la implementación.
+
+## Probar el paso 2
+
+Ejecutar `npx expo start --go` y abrir Expo Go. Desde Login, recorrer Registro y volver. Ingresar con una cuenta ficticia para acceder a Lugares; desde el paso 6, seleccionar una fila abre sus detalles reales. Agregar destino abre el formulario funcional del paso 7; los sensores siguen pendientes de sus incrementos.
+
+`src/components/navigation-screen.tsx` comparte el contenedor adaptable y los botones. El ID temporal `navigation-preview` del paso 2 fue retirado en el paso 6: las rutas resuelven únicamente entidades visibles para la cuenta activa.
+
+## Registro local — paso 3
+
+En Registro, completar nombre, correo, contraseña de al menos 8 caracteres y confirmación. Ejemplo ficticio: `Demo`, `demo@example.test`, `demo12345`. Crear cuenta guarda primero el usuario, luego la sesión y abre Lugares. Se recortan nombre/correo y se normaliza el correo; la contraseña se conserva exactamente para calcular el verificador. Correo duplicado, campos vacíos, correo inválido, contraseña corta o confirmación distinta muestran errores y conservan los campos.
+
+La operación bloquea envíos repetidos y muestra «Guardando…». Si la cuenta se guardó pero falla la sesión, aparece un aviso específico y «Reintentar inicio de sesión»: se reusa la cuenta y se verifica la contraseña antes de reintentar únicamente la sesión. Si una escritura rechaza después de guardar, el reintento reconoce el ID pendiente y evita duplicarlo. Si no se pudo confirmar el guardado, no se anuncia éxito. Los JSON inválidos/errores de lectura bloquean la navegación con aviso y reintento, sin resetear ni sobrescribir datos.
+
+El ID de recuperación permanece en memoria durante esta ejecución. Si se cierra Expo Go tras un guardado parcial, la cuenta sigue guardada y se rechaza crearla otra vez; se puede ingresar mediante Login. Desde el paso 4, una sesión válida se restaura al reiniciar y permite acceder a Lugares.
+
+Archivos para explicar el registro:
+
+- `src/app/signup.tsx`: campos, errores, loading, teclado y navegación tras éxito.
+- `src/features/auth/validation.ts`: validaciones y normalización.
+- `src/features/auth/password.ts`: salt y verificador educativos con Expo Crypto.
+- `src/features/auth/registration.ts`: registro y recuperación de escrituras parciales, sin lógica de UI.
+- `src/storage/auth-storage.ts`: claves `tourism.users.v1` / `tourism.session.v1`, validación de JSON y persistencia.
+- `src/context/auth-context.tsx`: estado compartido y acción `signUp`.
+- `tests/auth.test.ts`: pruebas de validación, duplicados, errores/reintentos y conservación de datos. Ejecutar `npm run test:auth`. Los fallos de almacenamiento se provocan en un adaptador controlado; no se modifican los datos reales del simulador para estas pruebas.
+
+Se verificó en Expo Go 57.0.9 del iPhone 17e simulado con iOS 27.0: registro exitoso, campos vacíos, contraseñas ocultas, desplazamiento con teclado, regreso a Login y rechazo de duplicado tras reiniciar. Se inspeccionó el almacenamiento real de la cuenta ficticia para confirmar ausencia de contraseña en texto plano. La prueba física sigue pendiente.
+
+## Login, logout y sesión — paso 4
+
+Login requiere correo/contraseña, normaliza el correo y compara el hash con el salt/verificador guardado. El error de credenciales es genérico y conserva los campos. Se guarda la sesión antes de abrir Lugares. «Cerrar sesión» está en el encabezado: elimina únicamente `tourism.session.v1` antes de volver a Login. Ambos botones bloquean envíos repetidos y permiten reintentar si falla el almacenamiento.
+
+Al arrancar se muestra loading mientras se validan cuentas/sesión. Una sesión válida abre Lugares; ausente o huérfana abre Login. La sesión huérfana se ignora sin borrar el registro almacenado. JSON inválido o error de lectura muestra aviso y «Reintentar lectura» sin sobrescribir datos. `Stack.Protected` restringe Lugares, Detalles, Formulario y Brújula y elimina su historial al cerrar sesión.
+
+Para defender el cambio: `src/features/auth/session.ts` contiene verificación, persistencia y restauración; `src/context/auth-context.tsx` aplica el estado solo tras éxito y serializa operaciones; `src/app/_layout.tsx` controla loading/error y protección; `src/app/index.tsx` contiene el formulario; `src/app/places.tsx` contiene logout. Storage añade `removeItem` únicamente para la clave de sesión. No se añadieron dependencias.
+
+Para probar: entrar con una cuenta ficticia, reiniciar Expo Go y comprobar Lugares; cerrar sesión y comprobar Login sin regreso privado por Atrás; volver a ingresar y verificar que la cuenta sigue disponible. Las pruebas `npm run test:auth` cubren fallos de lectura/escritura/borrado antes y después de commit, sesión huérfana y JSON inválido mediante almacenamiento controlado. Los resultados manuales y límites se registran en STEPBYSTEP.md; la ejecución física sigue pendiente.
+
+## Catálogo local — paso 5
+
+Ingresar o registrarse con una cuenta ficticia: Lugares muestra 20 destinos en el orden de PLACES.md. Desplazar hasta Puente de la Mujer. Las filas muestran nombre y origen; el espacio lateral queda reservado para favoritos. Desde el paso 6, tocar el nombre/origen abre Detalles; el espacio lateral sigue reservado para favoritos. Se retiraron los enlaces temporales de prueba de Lugares.
+
+Para defender el código: `src/types/destination.ts` distingue seed/custom por prefijo y exige propietario para custom; `src/data/defaultDestinations.ts` contiene los 20 datos y descripciones en español; `src/features/destinations/selectors.ts` filtra por propietario y conserva orden; `src/app/places.tsx` usa FlatList y keyExtractor por ID, Flexbox y áreas seguras. Las constantes son de solo lectura y están congeladas; no se guardan en AsyncStorage ni consultan una API. La lista custom está vacía hasta implementar estado/persistencia y creación en el paso 7; el selector ya acepta custom en orden de creación y excluye los ajenos.
+
+Ejecutar `npm run test:catalog` para contrastar exactamente IDs, nombres, coordenadas y orden con PLACES, verificar rangos/inmutabilidad y comprobar aislamiento A/B/anónimo. TypeScript, lint, estas comprobaciones y las 18 pruebas de autenticación pasaron. El catálogo y scroll se inspeccionaron en Expo Go de los simuladores iPhone 17e e iPhone 18 Pro, iOS 27.0. No se acredita prueba física ni modo avión: la independencia de API se verificó revisando las dependencias del catálogo y ejecutando sus módulos locales en Node. Metro existente se conservó.
+
+## Detalles — paso 6
+
+En Lugares, tocar una fila abre Detalles con nombre, descripción, latitud, longitud y origen. Los destinos predefinidos indican «Solo lectura». Editar aparece únicamente para destinos propios; favoritos y eliminar se incorporarán en sus pasos. El enlace a Brújula aclara que está en desarrollo, lleva el ID real y muestra el nombre seleccionado; todavía no pide permisos ni activa sensores.
+
+«Volver a Lugares» usa `dismissTo`: regresa a la lista existente o reemplaza la ruta si se abrió directamente, evitando duplicar Lugares en el historial. El Atrás del Stack también funciona. Un ID inválido, inexistente, múltiple o ajeno muestra el mismo aviso, sin revelar datos privados, y ofrece un retorno seguro.
+
+Para defender el código: `src/app/places.tsx` pasa solo el ID con un Link tipado; `src/app/destination/[id].tsx` lee el parámetro y muestra la entidad sin copiarla a un estado de pantalla; `src/features/destinations/use-destinations.ts` comparte la lectura de la colección y del usuario activo entre lista, Detalles y Brújula; `selectors.ts` resuelve únicamente dentro del catálogo visible. La colección custom común sigue vacía hasta el paso 7: no se agregó persistencia anticipada ni se escribieron seeds en AsyncStorage.
+
+Ejecutar `npm run test:catalog` para verificar resolución de seeds/custom propios y rechazo de IDs inválidos, desconocidos, ajenos y anónimos. Los custom de esa prueba son fixtures controlados; desde el paso 7 también se verificó un destino propio real en la interfaz. En Expo Go del iPhone 18 Pro simulado con iOS 27.0 se probó Obelisco → Brújula → Atrás → Detalles → Volver a Lugares, Torre Monumental → Atrás y el enlace directo `exp://127.0.0.1:8081/--/destination/seed-99` → aviso → Lugares. Se inspeccionaron visualmente el nombre largo, coordenadas y aviso. La prueba física continúa pendiente en sus pasos correspondientes; el paso 7 se documenta a continuación.
+
+
+## Crear destino propio — paso 7
+
+En Lugares, elegir **Agregar destino**. Completar nombre, descripción, latitud y longitud; se acepta punto o coma decimal, signo menos y 0, con latitud −90..90 y longitud −180..180. No se acepta notación exponencial, separadores de miles ni texto parcial. Guardar vuelve a Lugares y agrega el destino después del catálogo; Cancelar/Atrás descarta el formulario sin escribir. Los campos tienen etiquetas accesibles; el formulario se desplaza y evita el teclado. En iOS se usa teclado completo para poder escribir coordenadas negativas.
+
+El contexto existente mantiene la colección única y la acción `createDestination`; asigna el propietario desde la sesión y bloquea operaciones simultáneas. `src/features/destinations/creation.ts` contiene validación, lectura de JSON desconocido y servicio de creación. `src/features/destinations/use-destinations.ts` conecta esa colección con los selectores de lista/Detalles. `src/app/destination/form.tsx` controla campos, errores y pending; `src/app/places.tsx` ofrece el acceso al formulario.
+
+Se escribe únicamente `tourism.destinations.v1`, con destinos custom y orden de creación. Los seeds siguen en código. El arranque valida destinos antes de habilitar navegación; datos inválidos/error de lectura muestran aviso y reintento sin borrarlos. El estado confirmado cambia solo después de guardar. Si una escritura rechaza después de commit, se informa error y el reintento de la misma instancia del formulario reutiliza el ID, aplicando los campos actuales sin duplicar; una nueva instancia tiene un intento independiente. Si se reinicia tras un error, se restaura lo que efectivamente quedó persistido. No se necesita recuperación multi-clave para el alta.
+
+Ejecutar `npm run test:destinations`, además de TypeScript, lint, `test:auth` y `test:catalog`. Para probar manualmente: crear un destino ficticio, consultar sus detalles, reiniciar Expo Go, cancelar otra alta y cambiar a otra cuenta local. La cuenta B debe ver solo sus destinos y los 20 seeds. La prueba del paso 7 se ejecutó en Expo Go del iPhone 18 Pro simulado con iOS 27.0; reinicio, detalles, campos vacíos, cancelación y cambio a B verificados. Los fallos de almacenamiento se comprobaron con adaptador controlado, sin provocar fallos reales de AsyncStorage. Prueba física pendiente según pasos 1/13.
+
+
+## Editar destino propio — paso 8
+
+En Detalles de un destino propio, tocar **Editar destino**. El formulario compartido precarga nombre, descripción, latitud y longitud. Guardar valida los mismos campos del alta y vuelve a Detalles solo después de persistir; Lugares refleja los cambios. Cancelar vuelve sin guardar. Los destinos predefinidos y los de otra cuenta no admiten edición, incluso con un ID enviado directamente al formulario o al servicio.
+
+Para defenderlo: `selectors.ts` resuelve un custom autorizado; `destination/form.tsx` inicializa una copia de los campos para edición; `auth-context.tsx` toma el usuario de la sesión; `features/destinations/update.ts` relee y valida el almacenamiento, verifica propiedad y sustituye en el mismo índice conservando ID/ownerId/source. La única escritura usa `tourism.destinations.v1`. El contexto publica el resultado únicamente tras guardado exitoso. Ante fallo, mantiene el estado confirmado y el formulario conserva los valores para reintentar. Un fallo después de commit puede haber guardado datos: el reintento reemplaza el mismo ID y el reinicio lee lo realmente persistido, sin duplicar ni mover entidades.
+
+Validación ejecutada: TypeScript, lint, pruebas de destinos/catálogo/auth y diff sin errores. En Expo Go del iPhone 18 Pro / iOS 27.0 simulado se comprobó precarga, nombre vacío, cancelación, guardado, actualización de ambas pantallas y restauración tras **Reload** (reinicio de ejecución JavaScript e hidratación; no cierre del proceso). Se restauró el nombre original del destino usado para probar. Permisos de rutas y fallos de lectura/escritura se verificaron con parámetros y almacenamiento controlados usando las funciones reales; no se provocaron fallos físicos de AsyncStorage. El iPhone físico sigue pendiente en sus pasos previstos.

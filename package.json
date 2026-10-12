@@ -4,8 +4,10 @@
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~57.0.22",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~57.0.27",
     "expo-constants": "~57.0.21",
+    "expo-crypto": "~57.0.4",
     "expo-device": "~57.0.2",
     "expo-font": "~57.0.4",
     "expo-glass-effect": "~57.0.4",
@@ -39,7 +41,10 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "test:auth": "node scripts/test-auth.cjs",
+    "test:catalog": "node scripts/test-catalog.cjs",
+    "test:destinations": "node scripts/test-destinations.cjs"
   },
   "private": true
 }

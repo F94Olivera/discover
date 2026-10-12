@@ -1,0 +1,543 @@
+# Paso a paso — TP de turismo en Buenos Aires
+
+## Cómo usar esta lista
+
+Este plan contiene los pasos **0 a 14**: una preparación documental y catorce incrementos técnicos. Todos los checks comienzan sin marcar, incluso para decisiones ya documentadas. Se marcarán después de revisar la evidencia de cada entrega juntos. Un comando exitoso no acredita una prueba manual en el teléfono.
+
+Cada incremento debe tener alcance pequeño, código explicable y una comprobación concreta. No avanzar al siguiente hasta revisar el actual. No agregar perfil, i18n, backend ni mapas. Conservar datos locales entre entregas y evitar cambios ajenos a la feature.
+
+Documentos de referencia: [requisitos](./REQUIREMENTS.md), [flujos](./FLOWS.md), [reglas de desarrollo](./AGENTS.md), [catálogo](./PLACES.md) y [README](./README.md).
+
+Dispositivo de demostración: **iPhone 14 Pro**. El simulador puede ayudar con interfaz/navegación, pero **la prueba física de ubicación y brújula se realizará en el paso 13**. Registrar en ese momento versiones reales de iOS y Expo Go.
+
+## Checklist obligatorio para cada entrega de código
+
+Repetir estas comprobaciones en cada paso que cambie código; registrar resultados en su entrega.
+
+- [ ] Explicar el objetivo, los archivos previstos y el comportamiento que podrá probar el usuario.
+- [ ] Leer las reglas aplicables y comprobar que no se contradicen los documentos.
+- [ ] Implementar solo el alcance del incremento, con componentes funcionales y TypeScript.
+- [ ] Mantener textos visibles en español y nombres de código en inglés.
+- [ ] Incorporar loading, errores y accesibilidad donde corresponda.
+- [ ] Ejecutar `npx tsc --noEmit` y registrar resultado real.
+- [ ] Ejecutar `npm run lint` y registrar resultado real.
+- [ ] Ejecutar pruebas adicionales solo cuando verifiquen reglas relevantes del cambio.
+- [ ] Probar manualmente el camino exitoso, el error relevante y volver/cancelar cuando aplique.
+- [ ] Revisar el diff y ejecutar `git diff --check`.
+- [ ] Informar archivos afectados, comandos ejecutados, resultados y limitaciones pendientes.
+- [ ] Explicar cómo encontrar y defender el código de la feature.
+- [ ] Revisar el incremento con el usuario antes de comenzar el siguiente.
+
+## Paso 0 — Alinear la documentación
+
+**Resultado esperado:** una especificación coherente y un alcance claro.
+
+- [x] Confirmar que la consigna y rúbrica ya fueron contrastadas por el usuario; no pedirlas nuevamente.
+- [x] Revisar que REQUIREMENTS, FLOWS y AGENTS describen el mismo producto.
+- [x] Confirmar acceso mediante Login/Registro, lista de lugares con favoritos y pantalla dedicada de brújula.
+- [x] Confirmar Detalles y Formulario como pantallas auxiliares para información y CRUD.
+- [x] Confirmar inicio automático de sesión después del registro exitoso.
+- [x] Confirmar corazón vacío/lleno rojo y favoritos primero, con orden estable dentro de ambos grupos.
+- [x] Confirmar que quitar un favorito restaura su posición relativa entre los no favoritos.
+- [x] Revisar los 20 lugares de PLACES, IDs únicos, rangos de coordenadas y fuentes por lugar.
+- [x] Confirmar interfaz y README en español; código y los tres documentos de especificación en inglés.
+- [x] Confirmar preferencia iOS y dispositivo iPhone 14 Pro; diferir sensores físicos al paso 13.
+- [x] Ignorar fechas de entrega de 2025 y no inventar reemplazos.
+- [x] Mantener perfil e i18n fuera de la primera versión.
+- [x] Confirmar persistencia junto con cada feature mutable y aislamiento desde el comienzo.
+- [x] Revisar esta lista de pasos antes de implementar navegación.
+
+## Paso 1 — Comprobar la plantilla y Expo Go
+
+**Resultado esperado:** conocer si el proyecto actual compila y abre, sin implementar pantallas del TP.
+
+- [x] Inspeccionar package.json, lockfile, app.json, tsconfig y rutas existentes.
+- [x] Registrar versiones instaladas de Node, npm, Expo, React Native y TypeScript.
+- [x] Comprobar dependencias instaladas sin instalar ni actualizar paquetes innecesariamente.
+- [x] Ejecutar TypeScript sobre la plantilla actual y registrar errores o éxito.
+- [x] Ejecutar lint sobre la plantilla actual y registrar errores, warnings o éxito.
+- [x] Ejecutar `npx expo install --check` para compatibilidad de dependencias.
+- [x] Ejecutar Expo Doctor si está disponible y revisar cada fallo pertinente.
+- [x] Consultar documentación oficial sobre SDK actual, Expo Go iOS y expo-location.
+- [x] Revisar especificaciones oficiales del iPhone 14 Pro para GPS y brújula.
+- [x] Diferenciar compatibilidad teórica, compilación del bundle y ejecución real en Expo Go.
+- [x] Detectar si hay Xcode, simuladores y Expo Go instalados en el Mac.
+- [x] Iniciar Metro con `npx expo start` y comprobar que arranca sin errores.
+- [x] Generar/cargar el bundle iOS y comprobar errores de resolución o compilación.
+- [x] Abrir la plantilla en Expo Go del simulador si existe un entorno disponible.
+- [x] Verificar visualmente las pantallas de ejemplo y el cambio entre pestañas si se logra abrir.
+- [ ] Abrir en Expo Go del iPhone mediante QR/enlace cuando el usuario esté disponible; confirmar carga y navegación básica.
+- [x] Registrar exactamente qué entorno se probó y qué prueba quedó pendiente.
+- [x] Dejar instrucciones para repetir el arranque y detener Metro cuando ya no sea necesario.
+- [x] No solicitar permiso de ubicación ni activar sensores durante este paso.
+- [x] Resolver o informar bloqueos de Expo Go antes de comenzar navegación; no introducir un development build.
+
+## Paso 2 — Navegación mínima
+
+**Resultado esperado:** rutas del TP conectadas, todavía sin autenticación real.
+
+- [x] Preservar la base Expo Router y sustituir solo ejemplos necesarios.
+- [x] Crear Stack raíz con Login y Registro.
+- [x] Crear estructura de rutas para Lugares, Detalles, Formulario y Brújula.
+- [x] Mantener pantallas iniciales pequeñas y textos en español.
+- [x] Probar Login → Registro → volver a Login.
+- [x] Comprobar títulos, botón Atrás y áreas seguras de iPhone.
+- [x] Comprobar que los parámetros de destino estén tipados y sean validados antes de usarse.
+- [x] No presentar rutas de prueba como autenticación funcional.
+- [x] Verificar Flexbox en dos tamaños de pantalla y evitar anchos absolutos rígidos.
+- [x] Completar la verificación común de entrega.
+
+## Paso 3 — Registro local
+
+**Resultado esperado:** cuenta válida guardada sin contraseña en texto plano.
+
+- [x] Definir User y Session con tipos explícitos y un estado compartido mínimo.
+- [x] Incorporar AsyncStorage y el mecanismo de verificación de contraseña compatibles con Expo Go.
+- [x] Definir claves/versionado y validadores de datos leídos desde almacenamiento.
+- [x] Definir recuperación si se guarda el usuario pero falla el guardado de sesión.
+- [x] Crear campos nombre, correo, contraseña y confirmación; ocultar contraseñas visualmente.
+- [x] Validar nombre no vacío, correo básico, mínimo de 8 caracteres y coincidencia.
+- [x] Normalizar correo a minúsculas y recortar nombre/correo sin alterar la contraseña.
+- [x] Rechazar correo duplicado aunque cambien mayúsculas o espacios exteriores.
+- [x] Generar ID y salt; guardar únicamente salt y verificador, nunca contraseña/confirmación.
+- [x] Mostrar errores junto a campos y conservar valores ante error.
+- [x] Deshabilitar envíos repetidos durante la operación y mostrar estado de carga.
+- [x] Guardar usuario/sesión antes de confirmar éxito y abrir Lugares automáticamente.
+- [x] Probar registro válido y cada validación con credenciales ficticias.
+- [x] Probar fallo de almacenamiento y reintento sin duplicar la cuenta.
+- [x] Inspeccionar el dato almacenado para comprobar ausencia de contraseña en texto plano.
+- [x] Completar la verificación común de entrega.
+
+## Paso 4 — Login, logout y restauración de sesión
+
+**Resultado esperado:** acceso protegido y sesión persistente.
+
+- [x] Implementar signIn y signOut en la única fuente de verdad.
+- [x] Validar correo/contraseña requeridos y mostrar error genérico por credenciales incorrectas.
+- [x] Verificar contraseña contra salt/verificador local.
+- [x] Guardar sesión antes de abrir Lugares.
+- [x] Incorporar Cerrar sesión en el encabezado de Lugares.
+- [x] Borrar solo sesión al cerrar, preservando usuarios y datos.
+- [x] Mostrar loading al hidratar y validar almacenamiento antes de habilitar navegación.
+- [x] Restaurar una sesión cuyo usuario existe y regresar a Login si es huérfana.
+- [x] Manejar JSON inválido y errores de lectura con aviso/reintento, sin sobrescritura silenciosa.
+- [x] Bloquear rutas privadas y retorno por Atrás después de cerrar sesión.
+- [x] Probar inicio válido/incorrecto y fallos de guardado/borrado de sesión.
+- [x] Reiniciar la app y verificar sesión válida; comprobar también sesión ausente/huérfana.
+- [x] Completar la verificación común de entrega.
+
+## Paso 5 — Catálogo en FlatList
+
+**Resultado esperado:** los 20 lugares visibles sin consultar una API.
+
+- [x] Definir Destination y IDs seed/custom sin colisiones.
+- [x] Crear constantes con los 20 lugares de PLACES y sus coordenadas.
+- [x] Añadir descripción breve en español para cada lugar, sin inventar hechos históricos.
+- [x] Comprobar exactamente 20 seeds, IDs únicos y coordenadas finitas dentro de rango.
+- [x] Mantener seeds en código; no insertarlos en AsyncStorage.
+- [x] Implementar FlatList con keyExtractor basado en ID y filas legibles.
+- [x] Mostrar nombre y origen, reservando el espacio de la futura acción de favorito.
+- [x] Crear selector que incluya seeds y solo destinos propios del usuario activo.
+- [x] Definir orden base de seeds y orden de creación de custom.
+- [x] Verificar scroll, áreas seguras y tamaños diferentes de pantalla.
+- [x] Comprobar catálogo sin API una vez cargado el bundle.
+- [x] Completar la verificación común de entrega.
+
+## Paso 6 — Detalles
+
+**Resultado esperado:** abrir y consultar un lugar autorizado.
+
+- [x] Navegar desde fila usando ID, sin duplicar entidades en estado de pantalla.
+- [x] Resolver destino desde la fuente de verdad y validar visibilidad.
+- [x] Mostrar nombre, descripción, coordenadas y origen en español.
+- [x] Preparar acciones necesarias sin simular funcionalidades aún no implementadas.
+- [x] Volver a Lugares con navegación coherente.
+- [x] Manejar ID inexistente, inválido o ajeno mediante aviso y retorno seguro.
+- [x] Probar al menos un seed y, cuando exista, un custom.
+- [x] Completar la verificación común de entrega.
+
+## Paso 7 — Crear destino propio
+
+**Resultado esperado:** alta persistente y aparición en la lista.
+
+- [x] Añadir Agregar destino en Lugares y abrir formulario vacío.
+- [x] Crear campos nombre, descripción, latitud y longitud accesibles con teclado utilizable.
+- [x] Definir formato de entrada de decimales y comunicarlo al usuario.
+- [x] Rechazar nombre/descripcion vacíos, coordenadas vacías/no numéricas/no finitas y fuera de rango.
+- [x] Permitir coordenadas 0 y valores límite válidos.
+- [x] Generar ID custom único y asignar ownerId desde sesión, no desde el formulario.
+- [x] Guardar mediante acción centralizada antes de confirmar éxito.
+- [x] Volver a Lugares y mostrar el destino sin reiniciar.
+- [x] Cancelar sin guardar; conservar valores si falla persistencia.
+- [x] Reiniciar y verificar que el destino se conserva.
+- [x] Cambiar de cuenta y comprobar que el destino no es visible para otro usuario.
+- [x] Completar la verificación común de entrega.
+
+## Paso 8 — Editar destino propio
+
+**Resultado esperado:** cambios persistentes sin alterar identidad/propiedad/orden.
+
+- [x] Mostrar Editar solo para custom propios y bloquear también en la acción de dominio.
+- [x] Validar ID/propiedad antes de precargar el formulario compartido.
+- [x] Precargar todos los campos y aplicar validaciones de creación.
+- [x] Conservar ID, ownerId y posición de creación al guardar.
+- [x] Persistir antes de éxito y regresar a Detalles con valores nuevos.
+- [x] Verificar actualización simultánea en Lugares y Detalles.
+- [x] Cancelar edición y comprobar que nada cambió.
+- [x] Probar ruta directa a seed/custom ajeno y verificar rechazo.
+- [x] Probar fallo de escritura y reintento conservando input.
+- [x] Reiniciar y comprobar los cambios guardados.
+- [x] Completar la verificación común de entrega.
+
+## Paso 9 — Favoritos integrados
+
+**Resultado esperado:** corazón funcional, orden estable y aislamiento por usuario.
+
+- [ ] Definir Favorite por userId/destinationId y validar datos persistidos.
+- [ ] Implementar toggleFavorite sin duplicados ni referencias a destinos ajenos/invisibles.
+- [ ] Añadir corazón vacío y corazón lleno rojo en cada fila y acción equivalente en Detalles.
+- [ ] Añadir etiquetas/estado accesible y área táctil adecuada.
+- [ ] Evitar que tocar corazón abra Detalles.
+- [ ] Mostrar pending y bloquear toques repetidos mientras guarda.
+- [ ] Conservar corazón/orden confirmados hasta completar persistencia.
+- [ ] Ordenar favoritos primero respetando orden base dentro de ambos grupos.
+- [ ] Desmarcar y comprobar retorno a posición relativa original.
+- [ ] Verificar funcionamiento para seeds y custom propios.
+- [ ] Verificar coherencia entre Detalles y lista, incluido texto editado de custom.
+- [ ] Probar lista sin favoritos y varios favoritos marcados en distinto orden temporal.
+- [ ] Probar reinicio y cambio A/B/A sin filtración de favoritos.
+- [ ] Probar error de escritura: estado previo conservado y reintento posible.
+- [ ] Completar la verificación común de entrega.
+
+## Paso 10 — Eliminar destino propio
+
+**Resultado esperado:** baja con confirmación y limpieza de favoritos.
+
+- [ ] Mostrar Eliminar solo para custom propios y verificar propiedad en dominio.
+- [ ] Abrir confirmación en español con Cancelar/Eliminar.
+- [ ] Cancelar y verificar destino/favorito intactos.
+- [ ] Definir recuperación si falla parte del guardado destino/favoritos.
+- [ ] Borrar destino y todas sus referencias favoritas en un mismo cambio lógico.
+- [ ] Confirmar éxito solo tras completar persistencia y regresar a Lugares.
+- [ ] Verificar que filas y Detalles no conserven entidad eliminada.
+- [ ] Rechazar eliminación de seeds o custom ajenos, incluso desde llamadas directas.
+- [ ] Probar borrado de un favorito y de un no favorito, y reiniciar.
+- [ ] Probar fallos/reintentos sin éxito falso ni referencias huérfanas.
+- [ ] Completar la verificación común de entrega.
+
+## Paso 11 — Cálculo de orientación
+
+**Resultado esperado:** cálculo matemático independiente de UI y sensores.
+
+- [ ] Crear función pura de bearing desde origen/destino geográficos.
+- [ ] Crear función pura de ángulo relativo entre bearing y heading.
+- [ ] Documentar grados/radianes, normalización y sentido de rotación de la flecha.
+- [ ] Validar valores finitos y rangos donde corresponda.
+- [ ] Comprobar casos norte, este, sur y oeste con coordenadas conocidas.
+- [ ] Comprobar cruce 359°/0° y rotaciones negativas/equivalentes.
+- [ ] Definir tratamiento de posición coincidente/cercana sin dirección inventada.
+- [ ] Comprobar que el rumbo usado y el heading comparten referencia norte coherente.
+- [ ] Añadir pruebas significativas de las funciones puras y ejecutarlas.
+- [ ] Completar la verificación común de entrega.
+
+## Paso 12 — Ubicación bajo demanda
+
+**Resultado esperado:** pantalla de Brújula y manejo de permisos/posición; sin acreditar sensores físicos aún.
+
+- [ ] Instalar expo-location con versión compatible mediante expo install.
+- [ ] Abrir Brújula desde Detalles con destino validado.
+- [ ] Mostrar destino y botón Iniciar orientación sin permiso al abrir la ruta.
+- [ ] Solicitar únicamente permiso foreground al tocar el botón.
+- [ ] Mostrar explicación de permiso y estados solicitando/obteniendo ubicación en español.
+- [ ] Obtener posición y precisión; validar coordenadas antes de usarlas.
+- [ ] Manejar permiso rechazado, sin posibilidad de volver a solicitarlo, servicios desactivados y error/timeout de posición.
+- [ ] Ofrecer reintento o instrucciones de ajustes cuando corresponda.
+- [ ] Evitar actualizaciones tardías después de salir y permitir cancelar/detener.
+- [ ] Probar estados con simulador/datos controlados y registrar sus límites.
+- [ ] No solicitar background ni incorporar mapas/geocodificación.
+- [ ] Reservar validación GPS/sensores del iPhone físico para el paso 13.
+- [ ] Completar la verificación común de entrega.
+
+## Paso 13 — Brújula en el iPhone 14 Pro
+
+**Resultado esperado:** demostración física de orientación y fallbacks.
+
+- [ ] Registrar iPhone 14 Pro, versión iOS, versión Expo Go y SDK del proyecto.
+- [ ] Confirmar que el bundle abre en Expo Go del teléfono.
+- [ ] Suscribir heading únicamente con orientación activa.
+- [ ] Verificar disponibilidad/calidad de heading y elegir norte verdadero/magnético de forma coherente con bearing.
+- [ ] Calcular ángulo relativo y dibujar flecha accesible con explicación de orientación aproximada.
+- [ ] Mostrar calibración/no disponible si heading es inválido o de baja calidad.
+- [ ] Definir cercanía al destino tomando en cuenta precisión GPS.
+- [ ] Detener listeners al pulsar Detener, salir o desmontar, incluso con inicio asíncrono pendiente.
+- [ ] En el iPhone, iniciar, otorgar permiso foreground y comprobar ubicación/precisión.
+- [ ] Girar teléfono en distintas orientaciones y verificar respuesta continua de la flecha.
+- [ ] Contrastar orientación aproximada con un lugar conocido en un entorno abierto.
+- [ ] Probar rechazo de permiso y mantener el resto de la app utilizable.
+- [ ] Probar ubicación no disponible y heading inválido mediante condiciones reales o simulación controlada identificada.
+- [ ] Probar iniciar/detener repetidas veces y volver a Detalles sin listeners duplicados.
+- [ ] Verificar comportamiento al cambiar de destino y ante salida durante carga.
+- [ ] Documentar interferencia magnética/interiores y diferencias respecto del simulador.
+- [ ] No prometer navegación vial, UWB ni precisión centimétrica.
+- [ ] Completar la verificación común de entrega.
+
+## Paso 14 — Preparar la presentación
+
+**Resultado esperado:** app verificable, documentación fiel y defensa preparada.
+
+- [ ] Ejecutar los 16 escenarios de REQUIREMENTS y registrar resultado/evidencia de cada uno.
+- [ ] Distinguir escenarios físicos, simulados y pendientes; no marcar pruebas no realizadas.
+- [ ] Ejecutar TypeScript/lint y las pruebas relevantes finales.
+- [ ] Comprobar arranque desde instalación documentada y reinicio con datos existentes.
+- [ ] Revisar separación por usuario, permisos de dominio e inmutabilidad del catálogo.
+- [ ] Revisar loading/error/retry, cancelaciones y fallos de persistencia.
+- [ ] Revisar UI española, accesibilidad, teclado, áreas seguras y tamaños de pantalla.
+- [ ] Actualizar README con estado real, instalación, comandos y estructura final.
+- [ ] Documentar dependencias efectivamente usadas y justificar cada incorporación.
+- [ ] Documentar cuentas locales sin sincronización y autenticación educativa.
+- [ ] Actualizar declaración de uso de IA con asistencia realmente utilizada.
+- [ ] Documentar dispositivo físico, limitaciones de brújula y resultados reales.
+- [ ] Preparar credenciales ficticias de A/B y un destino propio de prueba.
+- [ ] Ensayar registro/login, catálogo, CRUD, favoritos, cambio de usuario, reinicio y brújula.
+- [ ] Identificar archivos de navegación, FlatList, validación, dominio, estado, storage y cálculos.
+- [ ] Explicar hooks y dependencias de efectos, cleanup de sensores y aislamiento por usuario.
+- [ ] Revisar cambios finales y pendientes contra requisitos, sin agregar features nuevas.
+
+## Registro de avances
+
+Agregar una entrada por entrega con fecha, paso, archivos, comandos/resultados, comprobaciones manuales y pendientes. Mantener todos los checks sin marcar en la creación inicial de este documento; los resultados técnicos se registran por separado y se marcan al revisarlos.
+
+### 11 de octubre de 2026 — Preparación y validación técnica inicial (pasos 0–1)
+
+En esta entrega inicial se conservaron todos los checks sin marcar; ver la revisión de checks al final para el estado actual.
+
+| Comprobación | Resultado ejecutado |
+| --- | --- |
+| Entorno | Node 26.3.0, npm 11.16.0, Expo 57.0.27, React Native 0.86.3, TypeScript 6.0.3 |
+| `npx tsc --noEmit` | Exit 0, sin errores; repetido después del ajuste del hook web |
+| `npm run lint` | Inicialmente falló por setState síncrono en el efecto de use-color-scheme.web.ts; corregido usando useSyncExternalStore para hidratación. Repetido: exit 0, sin errores/warnings de lint |
+| `npx expo install --check` | Exit 0, dependencias alineadas |
+| `npx expo-doctor` | Exit 0, 21/21 controles aprobados |
+| Metro en modo Expo Go | Arrancó con `npx expo start --go --localhost --port 8081`; `/status` respondió `packager-status:running` |
+| Bundle iOS | Solicitud HTTP exitosa; Metro compiló 1234 módulos, bundle de 5.918.287 bytes |
+| Simulador | iPhone 18 Pro simulado con iOS 27.0; Expo Go 57.0.9 instalado; se intentó abrir el enlace del proyecto mediante Expo CLI |
+| Ejecución visual | No acreditada: control de interfaz bloqueado por permisos pendientes de Accesibilidad/Grabación de pantalla. La lista de clientes Metro estaba vacía al comprobarla; no se considera probado el render ni el cambio de pestañas |
+| iPhone físico | No probado en esta entrega; sensores reservados al paso 13 en iPhone 14 Pro |
+
+**Archivos:** este plan; documentación de dispositivo/paso 13 en AGENTS, REQUIREMENTS, FLOWS y README; corrección mínima del hook web existente. No se implementaron rutas nuevas ni funcionalidades del TP.
+
+**Repetir en el Mac:** `npx expo start --go`, pulsar `i` para el simulador y revisar Home/Explore. Para iPhone, usar Mac/teléfono en la misma red, Expo Go compatible y escanear el QR con Cámara; el modo localhost de esta prueba solo sirve para el simulador. Detener Metro con Ctrl+C al terminar. No activar ubicación en esta comprobación.
+
+**Compatibilidad revisada:** el iPhone 14 Pro tiene GPS de doble frecuencia y brújula digital según [Apple](https://support.apple.com/en-us/111849). [expo-location](https://docs.expo.dev/versions/latest/sdk/location/) está incluido en Expo Go y expone ubicación y heading en iOS. La [ficha actual de Expo Go en App Store](https://apps.apple.com/us/app/expo-go/id982107779) publica versión 57.0.9 y requiere iOS 16.4 o posterior. No se conoce aún la versión instalada de iOS/Expo Go del teléfono; deberá coincidir con el SDK y cumplir el mínimo. La documentación histórica del lanzamiento SDK 57 mencionaba aprobación pendiente de App Store; la ficha actual ya muestra esa versión.
+
+**Límites aplicables:** permisos en primer plano; heading válido y calibrado, trueHeading puede devolver -1; GPS/brújula aproximados y susceptibles a interiores/interferencia. Los textos del diálogo nativo de permisos pertenecen al binario Expo Go y no se personalizan por app.json; usar explicación previa y errores propios en español. No incorporar background ni un build personalizado. Todo esto se verificará físicamente en el paso 13; no se encontraron impedimentos de hardware para el alcance definido.
+
+### 11 de octubre de 2026 — Revisión visual de Expo Go tras aprobar permisos
+
+Los permisos del control de interfaz ya permiten inspeccionar Device Hub. Se verificó la plantilla en **Expo Go 57.0.9, simulador iPhone 18 Pro, iOS 27.0**:
+
+- Home mostró el contenido “Welcome to Expo” y las instrucciones de la plantilla.
+- Tocar Explore abrió la pantalla de ejemplos, con secciones de navegación, plataformas, imágenes, tema y animaciones.
+- Tocar Home regresó correctamente a la pantalla inicial.
+- No se observó una pantalla de error durante ese recorrido.
+
+El primer intento con `--localhost` falló: Metro escuchaba en localhost IPv6 y Expo CLI abrió un enlace 127.0.0.1. Reiniciar con **`npx expo start --go --port 8081`** y abrir con `i` resolvió la conexión. Metro compiló el bundle solicitado por Expo Go (1681 módulos). Usar el comando habitual sin `--localhost` para repetir esta prueba.
+
+Esta entrada reemplaza el pendiente de revisión visual del registro anterior; no acredita ejecución en el iPhone 14 Pro físico ni sensores. En esta revisión visual se conservaron los checks sin marcar; posteriormente se actualizaron en la revisión de checks registrada al final. No hubo cambios de código ni navegación del TP en esta revisión. Metro se detuvo al terminar.
+
+### 11 de octubre de 2026 — Revisión de checks de los pasos 0 y 1
+
+A pedido del usuario se marcaron los checks respaldados por las decisiones confirmadas y las verificaciones registradas arriba.
+
+- **Paso 0: 14/14 completados.** Corresponde a confirmar el alcance/documentación, no a afirmar que esas funciones ya están implementadas.
+- **Paso 1: 19/20 completados.** Incluye TypeScript, lint, dependencias, Doctor, Metro, bundle y recorrido visual Home → Explore → Home en Expo Go del simulador. Se revisó además el lockfile: dependencias raíz coincidentes con package.json y paquetes directos registrados.
+- **Pendiente del paso 1:** abrir la plantilla en Expo Go del iPhone 14 Pro físico y confirmar carga/navegación básica. No confundir esa comprobación con la prueba de ubicación/brújula, que permanece reservada al paso 13.
+- Los checks comunes y los pasos 2–14 no se modificaron. No se implementó código nuevo ni se repitieron pruebas técnicas sin necesidad.
+
+### 12 de octubre de 2026 — Paso 2: navegación mínima
+
+**Implementación:** Stack raíz en `src/app/_layout.tsx`, Login en `index.tsx`, Registro en `signup.tsx`, Lugares en `places.tsx`, Detalles en `destination/[id].tsx`, Formulario en `destination/form.tsx` y Brújula en `compass/[id].tsx`. Ruta desconocida en `+not-found.tsx`. Se retiraron Explore y los dos componentes de pestañas de ejemplo, que el Stack reemplaza. Se conservaron los otros componentes de la plantilla.
+
+**Código compartido:** contenedor con ScrollView, Flexbox, áreas seguras y botones en `src/components/navigation-screen.tsx`; paleta inicial StyleSheet en `src/constants/theme.ts`, sin dependencias nuevas. `src/utils/destination-route.ts` acepta únicamente el ID temporal `navigation-preview`, rechaza parámetros ausentes, múltiples o desconocidos antes de usarlos. No es una entidad del catálogo; la resolución y visibilidad real quedan para los próximos pasos. No hay autenticación, escrituras ni sensores.
+
+**Verificación ejecutada:** `npx tsc --noEmit` y `npm run lint` terminaron con exit 0; `git diff --check` sin errores. Se compiló el bundle iOS por Metro. TypeScript detectó inicialmente el enlace obsoleto de las pestañas a Explore y se corrigió retirando esas pestañas. La revisión visual detectó fondo ausente en enlaces con estilo funcional; se corrigió con estilos estáticos y se verificó el resultado.
+
+**Pruebas manuales:** Expo Go en simulador iPhone 18 Pro / iOS 27.0: Login → Registro → volver a Login; Lugares → Detalles → Brújula → Atrás → Detalles → Atrás → Lugares; Formulario → Cancelar → Lugares. Títulos en español, encabezado Atrás y contenido bajo el área segura visibles. Enlace directo `destination/invalid` mostró «Destino no disponible» y permitió volver a Lugares. No se solicitó ubicación.
+
+**Pendientes:** verificar visualmente en un segundo tamaño de pantalla y en el iPhone físico. El contenedor usa ancho relativo, ancho máximo, scroll y botones sin alturas rígidas, pero eso no acredita una segunda prueba visual. Revisar esta entrega con el usuario; los checks del paso 2 se conservan sin marcar hasta esa revisión. No se comenzó el paso 3. Metro se detuvo al finalizar.
+
+**Defensa:** el Stack declara los títulos; cada archivo define una pantalla. Link pasa rutas tipadas mediante Href y parámetros; useLocalSearchParams lee entradas externas que se validan antes de continuar. BackButton usa el historial y una ruta de respaldo para apertura directa.
+
+### 12 de octubre de 2026 — Auditoría de checks del paso 2
+
+A pedido del usuario, se revisaron el código y la evidencia de la entrega de navegación. Se marcaron **9/10 checks** del paso 2: Expo Router/Stack, rutas, textos, recorrido Login–Registro, títulos/Atrás/áreas seguras, parámetros validados, aviso de navegación sin autenticación y verificación común registrada. La revisión solicitada satisface la revisión de este incremento; los checks comunes globales se conservan como plantilla para futuras entregas.
+
+**Pendiente sin marcar:** prueba visual de Flexbox en dos tamaños. La entrega anterior acredita solo iPhone 18 Pro simulado; disponer de ancho relativo, maxWidth y ScrollView no sustituye esa segunda prueba. Se intentó preparar iPhone 17e, pero no se obtuvo evidencia visual del proyecto en ese dispositivo durante esta auditoría. El servidor de Metro encontrado en el puerto 8081 ya estaba ejecutándose en otra ventana; se preservó.
+
+**Condición para avanzar:** el usuario autorizó el paso 3 si la revisión anterior resulta satisfactoria. Como el paso 2 conserva una comprobación pendiente, no se inició el paso 3 ni se marcaron sus checks. No se modificó código ni se afirmó que existiera registro local.
+
+### 12 de octubre de 2026 — Paso 2 completo: segundo tamaño
+
+Se abrió el proyecto en Expo Go 57.0.9 del simulador **iPhone 17e / iOS 27.0**, además de la prueba previa en iPhone 18 Pro. Se inspeccionaron visualmente Login, Registro, Lugares, Detalles, Brújula y Formulario: textos adaptados al ancho, botones visibles sin desbordes, encabezados y contenido respetando áreas seguras. Se verificaron Login → Registro → volver, Lugares → Detalles → Brújula → Atrás → Atrás, y Formulario → Cancelar → Lugares. No se observaron errores de aplicación ni se activaron sensores.
+
+Se marca el check restante de Flexbox en dos tamaños: **paso 2, 10/10 completo**. Esta evidencia resuelve el pendiente de la auditoría anterior y habilita el paso 3 solicitado por el usuario. La comprobación en teléfono físico y sensores sigue pendiente en sus pasos correspondientes. Se preservó el Metro que el usuario ya tenía ejecutándose.
+
+### 12 de octubre de 2026 — Paso 3: registro local y auditoría
+
+**Paso 3: 16/16 checks marcados**, distinguiendo la implementación, las pruebas automatizadas y las pruebas manuales. No se comenzó el paso 4. La revisión/auditoría de esta entrega fue solicitada por el usuario al autorizar avanzar tras completar el paso 2.
+
+**Archivos:** `src/types/auth.ts`, `src/features/auth/{validation,password,registration}.ts`, `src/storage/auth-storage.ts`, `src/context/auth-context.tsx`, formulario `src/app/signup.tsx`; integración en `_layout.tsx`, textos de Login/Lugares y contenedor compartido `navigation-screen.tsx`. Se actualizaron package.json/lockfile y README; pruebas en `tests/auth.test.ts`, runner `scripts/test-auth.cjs`.
+
+**Antes de persistir:** se definió guardar usuario antes de sesión. Una sesión fallida conserva la cuenta y ofrece reintento verificado, sin duplicarla. El servicio conserva ID/verificador pendiente incluso ante un rechazo de escritura después de commit; no conserva contraseña/confirmación. Si ya se sabe que la cuenta está guardada, un posterior fallo de lectura conserva ese aviso. Al reiniciar después de una escritura parcial se conserva/rechaza duplicar la cuenta; el login de cuentas existentes se implementará en paso 4. Datos inválidos o fallos de lectura no se resetean/sobrescriben.
+
+| Control ejecutado | Resultado |
+| --- | --- |
+| `npx expo install @react-native-async-storage/async-storage expo-crypto` | Instaló versiones compatibles con SDK 57: 2.2.0 / ~57.0.4 |
+| `npx tsc --noEmit` | Exit 0 |
+| `npm run lint` | Exit 0 |
+| `npm run test:auth` | 13/13 pruebas aprobadas; validaciones, normalización, password sin trim, salt/IDs independientes, duplicados, errores de lectura/escritura antes/después de commit, reintentos, concurrentes y datos inválidos preservados |
+| `git diff --check` | Sin errores |
+| `npx expo install --check` | Informó nuevas revisiones patch recomendadas para dependencias previas: @expo/ui ~57.0.23, expo ~57.0.28, expo-router ~57.0.26 y expo-splash-screen ~57.0.10. No indicó incompatibilidad de las dos dependencias añadidas. No se actualizaron paquetes previos en esta feature. |
+
+**Manual en Expo Go 57.0.9, iPhone 17e / iOS 27.0 simulado:** campos vacíos mostraron errores junto a campos y resumen; las contraseñas se mostraron ocultas. Se completó una cuenta ficticia (`prueba17e@example.test`), se comprobó desplazamiento/teclado y se abrió Lugares con el nombre normalizado después de guardar. Se terminó y reabrió Expo Go: cuentas/sesión conservadas; registrar el mismo correo con mayúsculas/espacios se rechazó, conservando inputs. Volver a Login funcionó. Se inspeccionó el manifest real de AsyncStorage y se comprobó estructura de cinco campos, salt hex de 32 caracteres, verificador hex de 64, ausencia de la contraseña ficticia y sesión asociada al mismo ID.
+
+**Alcance de pruebas:** el registro exitoso, campos vacíos, máscara, teclado, duplicado/reinicio y volver se verificaron manualmente en Expo Go. Cada regla de validación y los fallos/reintentos de almacenamiento se verificaron con pruebas automatizadas que ejecutan las funciones reales del dominio sobre un adaptador controlado, usando crypto de Node para el adaptador de hash; Expo Crypto real se ejecutó durante el registro en Expo Go. No se afirma haber provocado un fallo real de AsyncStorage en el dispositivo. No se ejecutaron aún los 16 escenarios finales completos de REQUIREMENTS.
+
+**Defensa:** el formulario controla input/errors/pending; el contexto tiene la acción compartida; el servicio de registro valida, compara duplicados, guarda cuenta/sesión y define el resultado de recuperación; storage valida objetos desconocidos; password genera salt y digest. SHA-256 con salt es una demostración educativa, no seguridad de producción.
+
+**Pendientes fuera de paso 3:** Login/logout, restauración automática y rutas protegidas en paso 4; catálogo/CRUD/favoritos y sensores en sus pasos. Pruebas físicas en iPhone y revisión de patches de dependencias previas permanecen documentadas; no se acreditan con el simulador. Metro del usuario se conservó ejecutándose.
+
+
+### 12 de octubre de 2026 — Paso 4: Login/logout, restauración y auditoría
+
+**Paso 4: 13/13 checks marcados.** Se auditó cada criterio contra código, pruebas de dominio y verificación manual en Expo Go. Los checks que incluyen fallos de almacenamiento/sesión huérfana se acreditan con pruebas automatizadas controladas, no con fallos físicos de AsyncStorage. No se comenzó el paso 5. La revisión y marcado fueron solicitados por el usuario.
+
+**Alcance y archivos:** formulario real `src/app/index.tsx`; logout en encabezado `src/app/places.tsx`; protección de todas las rutas privadas en `src/app/_layout.tsx`; registro actualizado para dejar la transición al Stack protegido. `src/features/auth/session.ts` implementa signIn/signOut/restauración; `validation.ts` valida requeridos; `src/types/auth.ts` tipa inputs/resultados; `src/storage/auth-storage.ts` elimina únicamente la clave de sesión; `src/context/auth-context.tsx` mantiene la única fuente de verdad y evita operaciones concurrentes. Se ampliaron `tests/auth.test.ts` y README. Sin dependencias nuevas, backend ni sensores.
+
+| Criterio auditado | Evidencia |
+| --- | --- |
+| signIn/signOut centralizados, verificador con salt y correo normalizado | Servicio de sesión + acciones del contexto; prueba de contraseña exacta, incluida conservación de espacios |
+| Requeridos y error genérico | Errores junto a campos y resumen accesible; cuenta inexistente y contraseña incorrecta devuelven el mismo mensaje |
+| Persistir antes de abrir/cerrar | Contexto cambia usuario/sesión únicamente tras resultado success; errores antes/después de commit y reintento cubiertos |
+| Logout en encabezado y conservación | Botón con pending/disabled; removeItem solo sobre session; prueba conserva cuentas y claves de destinos/favoritos byte por byte |
+| Hidratación, sesión válida/ausente/huérfana | restoreSession valida cuentas/sesión antes de habilitar Stack; huérfana devuelve usuario/sesión null sin modificar almacenamiento |
+| JSON inválido/error de lectura | Aviso/reintento del layout; pruebas verifican rechazo, cero escrituras, datos intactos y recuperación tras error de lectura |
+| Rutas privadas y Atrás | Stack.Protected agrupa Lugares, Detalles, Formulario y Brújula; verificación manual sin Atrás privado y enlace directo rechazado tras logout |
+| Verificación común | Objetivo/reglas revisados, alcance acotado, TypeScript y hooks, UI española, loading/errores/accesibilidad, comandos y diff revisados; pruebas manuales abajo y defensa en README |
+
+**Comandos:** `npx tsc --noEmit`, `npm run lint`, `npm run test:auth` (18/18 aprobadas) y `git diff --check`, todos exit 0. Se revisaron los archivos nuevos además del diff porque el repositorio ya contenía cambios sin commit de pasos previos; se preservaron esos cambios.
+
+**Manual en Expo Go, iPhone 17e con iOS 27.0 simulado:** sesión previa abrió Lugares; cerrar sesión mostró Login. Enviar campos vacíos mostró ambos errores. Credenciales incorrectas mostraron mensaje genérico conservando input. Ir a Registro y volver funcionó. Se creó cuenta ficticia `paso4@example.test` y se abrió Lugares; cerrar e ingresar con correo en mayúsculas/espacios abrió la misma cuenta. Terminar/reabrir Expo Go y cargar el proyecto restauró Lugares con la cuenta. Detalles → Atrás → Lugares funcionó. Tras logout no apareció Atrás y un enlace directo a `/destination/navigation-preview` mantuvo Login. Se reinició también sin sesión y se verificó Login.
+
+**Límites y recuperación:** fallos de escritura/borrado, sesiones huérfanas y JSON inválido se verificaron con las funciones reales y adaptador controlado; no se alteraron datos reales para provocar fallos. Un rechazo después de commit se reporta como error y permite reintento idempotente; al reiniciar se toma el estado persistido real. La hidratación todavía abarca cuentas/sesión: destinos/favoritos se integrarán cuando existan. Prueba física de Expo Go en iPhone 14 Pro sigue pendiente según pasos 1/13. El catálogo, CRUD/favoritos y brújula siguen pendientes en sus incrementos. Metro existente se conserva.
+
+**Defensa y repetición:** seguir formulario → acción del contexto → servicio → storage. El hash educativo compara salt/verificador; el contexto cambia solo ante éxito; Stack.Protected controla acceso e historial. Ejecutar `npx expo start --go`, entrar, reiniciar, cerrar y volver a entrar con credenciales ficticias. Consultar README para archivos y comandos. Esta entrega queda disponible para revisión antes de avanzar al paso 5.
+
+### 12 de octubre de 2026 — Paso 5: catálogo en FlatList y auditoría
+
+**Paso 5: 12/12 checks marcados.** Auditoría solicitada por el usuario: se cotejó cada criterio con los archivos reales, la prueba del catálogo y la inspección visual. No se inició el paso 6. Los checks comunes globales siguen como plantilla; esta entrada registra su aplicación al incremento.
+
+**Objetivo y archivos:** catálogo de 20 destinos sin API en `src/data/defaultDestinations.ts`, tipos en `src/types/destination.ts`, selector en `src/features/destinations/selectors.ts`, FlatList en `src/app/places.tsx`. Prueba reproducible en `scripts/test-catalog.cjs`, comando en package.json y documentación README. Se preservaron los cambios previos sin commit. Sin nuevas dependencias ni escrituras de catálogo.
+
+| Criterio | Evidencia auditada |
+| --- | --- |
+| Destination e IDs sin colisiones | Unión discriminada seed/custom, prefijos tipados y ownerId obligatorio para custom |
+| 20 constantes, coordenadas y descripciones | Comparación exacta con las 20 filas de PLACES: IDs, nombres, orden, coordenadas; descripciones españolas breves sin fechas ni hechos históricos añadidos |
+| Cantidad, unicidad y rangos | test:catalog comprueba 20, IDs únicos, coordenadas finitas/rangos y constantes congeladas |
+| Seeds en código | Solo constantes importadas; ningún acceso a AsyncStorage del catálogo |
+| FlatList y filas | keyExtractor por ID; nombre/origen español y reserva lateral de 48 puntos, sin corazón ficticio |
+| Visibilidad y orden | Prueba con custom A/B intercalados: seeds primero, custom propios en orden del array, anónimo sin destinos; inputs no mutados |
+| Scroll, áreas seguras y tamaños | Inspección visual del comienzo y final hasta Puente de la Mujer en iPhone 17e y iPhone 18 Pro simulados, iOS 27.0; nombres largos ajustados a varias líneas |
+| Sin API tras cargar bundle | Los módulos de datos/selector solo importan constantes/tipos; ejecución local en Node sin servicio remoto. No se afirma haber activado modo avión |
+| Verificación común | Reglas leídas, alcance paso 5, hooks/TypeScript, textos españoles, estado vacío y error de logout; loading/hidratación del layout existente. Comandos, diff y pruebas manuales registrados; defensa en README |
+
+**Comandos:** `npx tsc --noEmit`, `npm run lint`, `npm run test:auth` (18/18), `npm run test:catalog` y `git diff --check`: exit 0. La prueba de catálogo ejecuta módulos puros reales y contrasta PLACES; el chequeo completo de tipos corresponde a tsc.
+
+**Manual:** acceso con cuentas ficticias creadas en cada simulador, contador 20, orden desde Obelisco y scroll hasta Puente de la Mujer, origen visible y áreas seguras. Se observó un login incorrecto con aviso y conservación de input durante la preparación. Catálogo no tiene operación mutable ni cancelar; casos anónimo/usuario sin custom se verificaron en el selector. La UI no inventa loading de una lectura de catálogo síncrona.
+
+**Defensa y límites:** seguir tipos → constantes → selector → FlatList. Custom permanece vacío en pantalla hasta estado/persistencia/creación del paso 7; su orden de creación se define como orden del array (ediciones conservarán posición). Los enlaces de prueba de Lugares se retiraron: selección/Detalles corresponde al paso 6, favoritos al 9. Prueba física sigue pendiente en pasos 1/13. El permiso de ubicación no se solicitó. Metro del usuario se preservó.
+
+
+### 12 de octubre de 2026 — Paso 6: Detalles y auditoría
+
+**Paso 6: 8/8 checks marcados.** La implementación y auditoría fueron solicitadas por el usuario. No se inició el paso 7. Se preservaron los cambios previos sin commit y el Metro existente del usuario. Sin dependencias nuevas ni escrituras de catálogo.
+
+**Archivos:** filas seleccionables en `src/app/places.tsx`; Detalles real en `src/app/destination/[id].tsx`; resolución compartida en `src/features/destinations/{selectors.ts,use-destinations.ts}`; Brújula recibe el ID real en `src/app/compass/[id].tsx`; aviso genérico y retorno `dismissTo` en `src/components/navigation-screen.tsx`. Se retiró `src/utils/destination-route.ts`, que aceptaba solo el fixture obsoleto. Se ampliaron `scripts/test-catalog.cjs` y README. No se modificaron las reglas de autenticación ni los datos de PLACES.
+
+| Check auditado | Evidencia |
+| --- | --- |
+| Fila → ID sin duplicar entidad | Link tipado pasa solo item.id; Detalles obtiene entidad en cada render, sin useState de destino |
+| Fuente de verdad y visibilidad | Hook común lee sesión del contexto y catálogo del selector; colección custom única y vacía hasta paso 7; resolución filtra por ownerId |
+| Información española | Nombre, descripción, Latitud, Longitud y Catálogo predefinido / Destino propio; seeds con Solo lectura |
+| Acciones sin simulación | Brújula conserva navegación con ID/nombre real y aviso explícito de desarrollo; favoritos, editar/eliminar no tienen controles ficticios |
+| Retorno coherente | Atrás del Stack y Volver a Lugares con dismissTo; observado retorno a lista sin Atrás duplicado |
+| ID inexistente/inválido/ajeno | Aviso idéntico y retorno seguro; enlace seed-99 probado en Expo Go; arrays, ausentes, formato inválido, desconocidos, ajenos/anónimo cubiertos por test:catalog |
+| Seed y custom cuando exista | Obelisco y Torre Monumental probados en pantalla; custom propio/ajeno comprobados en selector con fixtures. Custom real en UI aún no existe: prueba manual diferida al paso 7, conforme a «cuando exista» |
+| Verificación común | Requisitos/flujos/reglas leídos, alcance acotado, componentes funcionales, TypeScript, textos españoles, accesibilidad en filas y aviso/retorno; loading de sesión en layout existente, catálogo síncrono sin loading ficticio. Comandos y pruebas manuales abajo; defensa documentada en README. Auditoría solicitada; no se avanzó de incremento |
+
+**Comandos ejecutados:** `npx tsc --noEmit`, `npm run lint`, `npm run test:auth` (18/18) y `npm run test:catalog` (catálogo y resolución autorizada), todos exit 0. Tras ajustar el retorno a dismissTo se repitieron TypeScript/lint. `git diff --check` sin errores. Se revisó el diff y el contenido completo de los archivos nuevos del incremento, porque varios todavía no están registrados en Git.
+
+**Manual en Expo Go, iPhone 18 Pro / iOS 27.0 simulado:** registro con credenciales ficticias `paso6@example.test`; Lugares → Obelisco mostró descripción/coordenadas/origen; Brújula mostró Orientación hacia Obelisco sin permiso ni sensores; Atrás volvió a Detalles; Volver a Lugares regresó sin duplicar lista. Desde Safari se abrió `exp://127.0.0.1:8081/--/destination/seed-99`: Destino no disponible, aviso genérico y retorno a Lugares. Torre Monumental mostró nombre largo ajustado, coordenadas y origen; se inspeccionó visualmente y Atrás volvió a lista. Durante la preparación se agregó y retiró un enlace temporal de prueba que no se utilizó ni quedó en el resultado; el error se verificó mediante el enlace directo real de Safari.
+
+**Límites:** no se acredita prueba en iPhone físico, segundo tamaño nuevo de Detalles, CRUD/favoritos ni los 16 escenarios finales. No hay operación mutable de destinos en este paso; no corresponde reinicio de un cambio de destino ni pruebas de escritura de destinos. El aislamiento custom se acredita en funciones reales con fixtures controlados, no con entidades creadas en pantalla. La cuenta ficticia de prueba queda guardada localmente en ese simulador. Sensores físicos siguen en paso 13.
+
+**Defensa y repetición:** seguir fila → parámetro ID → hook común → selector de visibilidad → JSX de Detalles. `dismissTo` encuentra Lugares en el Stack y reemplaza si no existe. Ejecutar `npx expo start --go`, ingresar con cuenta ficticia, seleccionar destino, comprobar información y volver; probar el enlace desconocido anterior. La entrega queda disponible para revisión; no se comenzó el paso 7.
+
+
+### 12 de octubre de 2026 — Paso 7: creación persistente y auditoría
+
+**Paso 7: 12/12 checks marcados.** Se cotejó cada punto con el código y evidencia manual/automatizada. El usuario autorizó implementación, auditoría y marcado. No se inició el paso 8; los checks comunes globales permanecen como plantilla.
+
+**Archivos:** `src/app/places.tsx`, `src/app/destination/form.tsx`, `src/context/auth-context.tsx`, `src/features/destinations/use-destinations.ts`, nuevo `src/features/destinations/creation.ts`, `scripts/test-destinations.cjs`, comando en package.json y README. Se conservaron cambios previos sin commit. Sin dependencias nuevas, sensores ni backend.
+
+| Check auditado | Evidencia |
+| --- | --- |
+| Agregar → formulario vacío | Botón real en Lugares, ruta existente; apertura y reapertura vacías comprobadas en Expo Go |
+| Campos accesibles/teclado | Labels, accessibilityLabel, descripción multiline, ScrollView + KeyboardAvoidingView; teclado iOS completo permite signo menos |
+| Decimales comunicados | Ayuda española; punto/coma, signo, sin miles; parser decimal completo, sin parseFloat parcial |
+| Rechazar vacíos/no numéricos/no finitos/rangos | Validación compartida formulario/dominio; pruebas con NaN, Infinity, exponentes, texto parcial y límites excedidos; vacíos manuales |
+| 0 y límites válidos | Prueba de 0/0, −90/−180 y 90/180 |
+| ID único/propietario desde sesión | Crypto.randomUUID con prefijo custom; comprobación de colisión; acción usa session.userId, el formulario no envía propietario |
+| Acción centralizada/persistir antes de éxito | Contexto único, servicio escribe una clave, setCustomDestinations solo tras success; bloqueo de concurrencia |
+| Retorno y lista inmediata | dismissTo Lugares; contador 20 → 21, fila propia y Detalles con campos reales |
+| Cancelar/error conserva input | Cancelación de «No guardar» mantuvo 21; UI no limpia inputs en error; pruebas controladas de fallos/retry |
+| Reiniciar y conservar | Se terminó Expo Go y reabrió proyecto: 21 lugares; Detalles del destino guardado con nombre, descripción y coordenadas |
+| Cambiar de cuenta | Logout A → registro B ficticio paso7b@example.test: 20 seeds sin destino A; selector también probado con A/B y ruta ajena rechazada |
+| Verificación común | Objetivo/reglas revisados; alcance paso 7, hooks/TypeScript, español, loading/errores/accesibilidad, pruebas y revisión de código/diff, defensa en README; revisión solicitada, sin avance de paso |
+
+**Comandos ejecutados:** `npx tsc --noEmit`, `npm run lint`, `npm run test:auth` (18/18), `npm run test:catalog`, `npm run test:destinations` y `git diff --check`: exit 0. Se revisó también el contenido completo de los archivos nuevos, aún sin seguimiento de Git.
+
+**Manual en Expo Go / iPhone 18 Pro / iOS 27.0 simulado:** abrir formulario vacío; enviar vacío y observar cuatro errores y resumen; completar «Destino paso 7», descripción ficticia, latitud -34,6037 y longitud -58.3816; guardar y observar 21 lugares; terminar/reabrir Expo Go y observar 21, abrir custom y comprobar -34.6037/-58.3816; volver, abrir formulario vacío, escribir «No guardar», cancelar y conservar 21; cerrar sesión y registrar B, observar 20 sin destino A. La interacción usó el árbol accesible para campos/acciones; se inspeccionó el formulario y lista visualmente. La cuenta B queda activa y las cuentas/destino ficticios se conservan en el simulador. Metro existente se conservó.
+
+**Recuperación definida antes del alta:** una sola escritura de destinos; no modifica cuentas/sesión ni almacena seeds. Invalid JSON/datos y fallo de lectura no causan reset ni escrituras. Fallo antes/después de commit devuelve error, mantiene el estado confirmado y permite reintentar con el mismo ID por instancia de formulario. El reintento aplica input actual sin duplicar ni mover el registro; una nueva instancia genera otro intento. Reinicio toma el dato realmente persistido. Fallos, concurrencia, límites y aislamiento de rutas se acreditan con funciones reales sobre almacenamiento controlado; no se afirma haber provocado errores físicos de AsyncStorage.
+
+**Defensa:** formulario → acción del contexto (sesión) → validación/servicio → AsyncStorage → estado confirmado → selector → FlatList/Detalles. El validador del arranque recibe unknown y rechaza datos malformados antes de habilitar navegación. La separación por cuenta está en selectores y propietario de dominio, no solo en botones.
+
+**Límites pendientes fuera del paso:** prueba física del iPhone 14 Pro, edición/favoritos/eliminación y sensores en sus incrementos; no se acreditan los 16 escenarios finales completos. La verificación manual se hizo en un tamaño de simulador; los límites numéricos y errores de almacenamiento se verificaron automáticamente. El paso 7 queda disponible para revisión.
+
+
+### 12 de octubre de 2026 — Paso 8: edición y auditoría
+
+**Paso 8: 11/11 checks auditados y marcados**, con evidencia manual y automatizada diferenciada. El usuario solicitó implementación y auditoría; no se inició el paso 9. Se conservaron cambios previos y Metro existente. Sin dependencias nuevas.
+
+**Archivos afectados:** Detalles y formulario compartido (`src/app/destination/`), acción en `src/context/auth-context.tsx`, servicio nuevo `src/features/destinations/update.ts`, resolución autorizada en `selectors.ts`/`use-destinations.ts`, pruebas en `scripts/test-destinations.cjs`, README y esta lista.
+
+| Criterio | Evidencia |
+| --- | --- |
+| Editar solo custom propio + dominio | Detalles usa entidad visible y source custom; servicio relee almacenamiento y exige ownerId de sesión. Tests seed/ajeno/anónimo/desconocido sin escrituras |
+| Validar ruta antes de precargar | selectEditableDestination compartido; tests de parámetros directos seed/ajeno/ausente/array/inválido. Ruta muestra aviso genérico sin montar formulario |
+| Precarga y validaciones | Cuatro campos observados en Expo Go; nombre vacío mostró error y resumen; mismos validateDestination y casos numéricos del alta |
+| Identidad, propiedad y orden | Sustitución en mismo índice, fields limitados; pruebas comparan IDs, propietario y otras entidades |
+| Persistencia antes de éxito → Detalles | await setItem antes de success y setCustomDestinations; retorno dismissTo observado con nombre nuevo |
+| Lugares y Detalles coherentes | Nombre temporal «Cancha de Boca · prueba paso 8» observado en ambas pantallas; mismo contexto y selectores |
+| Cancelar sin cambios | «Cambio cancelado» no se guardó; volvió a Detalles con «Cancha de Boca» |
+| Rechazo de rutas seed/ajenas | Automatizado sobre el resolver real que usa la ruta y servicio independiente; no se acredita apertura visual del enlace directo en este incremento |
+| Fallo y reintento | Adaptador controlado falla antes/después de commit; estado previo ante fallo anterior, retry con input corregido sin duplicados. UI conserva input y habilita reintento; no fallo físico de AsyncStorage |
+| Reinicio y cambios | Reload de Expo Go reinició ejecución e hidrató AsyncStorage: nombre editado presente en Lugares y Detalles. No se terminó el proceso del sistema. También parseo del dato serializado en test |
+| Verificación común | Reglas y alcance leídos; hooks/TypeScript, español, loading/errores/accesibilidad; camino exitoso/error de validación/cancelación manual; comandos y revisión de archivos/diff; defensa en README. Entrega para revisión, sin avanzar de paso |
+
+**Comandos ejecutados:** `npx tsc --noEmit`, `npm run lint`, `npm run test:destinations`, `npm run test:catalog`, `npm run test:auth` (18/18), `git diff --check`: exit 0 en validación final. Lint detectó inicialmente una precarga mediante efecto; se corrigió con inicialización del formulario y componente con key por ID, y se repitieron tipos/lint. El input no se reinicializa cuando cambia la colección confirmada.
+
+**Manual:** Expo Go, iPhone 18 Pro, iOS 27.0 simulado, cuenta B previamente activa. Abrir custom, precarga completa, cancelar cambio, rechazar nombre vacío conservando los otros campos, guardar nombre temporal y ver Detalles/lista, Reload y comprobar restauración. Finalmente guardar el nombre original «Cancha de Boca», preservando descripción y coordenadas. La navegación por enlace desde Safari no pudo completarse mediante la herramienta; el rechazo se acredita por pruebas automatizadas del resolver real, no por observación visual. La captura de pantalla de Device Hub no estuvo disponible; evidencia manual basada en árbol de accesibilidad.
+
+**Defensa:** ruta → resolver autorizado → campos de formulario → acción del contexto con sesión → servicio con propiedad y validación → escritura única → estado confirmado → Detalles/FlatList. No hay escrituras de seeds ni cambios de ownerId/ID/orden. Pendientes fuera del paso: favoritos, eliminación y sensores; prueba física del iPhone 14 Pro según pasos 1/13. No se acreditan todos los escenarios finales ni errores físicos de almacenamiento.

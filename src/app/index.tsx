@@ -1,98 +1,87 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { RouteButton, NavigationScreen } from '@/components/navigation-screen';
+import { NavigationColors } from '@/constants/theme';
+import { useAuth } from '@/context/auth-context';
+import type { SigninErrors, SigninInput } from '@/types/auth';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
+const emptyInput: SigninInput = { email: '', password: '' };
+const fields: { key: keyof SigninInput; label: string; secure?: boolean }[] = [
+  { key: 'email', label: 'Correo electrónico' },
+  { key: 'password', label: 'Contraseña', secure: true },
+];
+
+export default function LoginScreen() {
+  const { signIn } = useAuth();
+  const [input, setInput] = useState(emptyInput);
+  const [errors, setErrors] = useState<SigninErrors>({});
+  const [message, setMessage] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+  const submitting = useRef(false);
+  const mounted = useRef(true);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+
+  async function submit() {
+    if (submitting.current) return;
+    submitting.current = true;
+    setPending(true);
+    setErrors({});
+    setMessage(null);
+    try {
+      const result = await signIn(input);
+      if (!mounted.current) return;
+      if (result.status === 'success') {
+        setInput(emptyInput);
+        // The protected Stack opens Places after persistence succeeds.
+      } else if (result.status === 'invalid') {
+        setErrors(result.errors);
+        setMessage('Revisá los campos indicados.');
+      } else {
+        setMessage(result.message);
+      }
+    } catch {
+      if (mounted.current) setMessage('No pudimos iniciar sesión. Conservamos los campos para reintentar.');
+    } finally {
+      submitting.current = false;
+      if (mounted.current) setPending(false);
+    }
   }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}>
+      <NavigationScreen title="Turismo en Buenos Aires" notice="Demostración educativa · Usá datos ficticios"
+        description="Ingresá con una cuenta creada en esta instalación. Usá credenciales ficticias.">
+        {fields.map(field => (
+          <View key={field.key} style={styles.field}>
+            <Text style={styles.label}>{field.label}</Text>
+            <TextInput accessibilityLabel={field.label} value={input[field.key]} secureTextEntry={field.secure}
+              autoCapitalize="none" autoCorrect={false}
+              keyboardType={field.key === 'email' ? 'email-address' : 'default'}
+              autoComplete="off" editable={!pending}
+              onChangeText={value => setInput(previous => ({ ...previous, [field.key]: value }))}
+              style={[styles.input, errors[field.key] && styles.invalidInput]} />
+            {errors[field.key] && <Text style={styles.error}>{errors[field.key]}</Text>}
+          </View>
+        ))}
+        {message && <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.error}>{message}</Text>}
+        <Pressable accessibilityRole="button" accessibilityState={{ disabled: pending, busy: pending }} disabled={pending}
+          onPress={() => void submit()} style={[styles.button, pending && styles.pending]}>
+          {pending && <ActivityIndicator color={NavigationColors.onPrimary} />}
+          <Text style={styles.buttonText}>{pending ? 'Ingresando…' : 'Iniciar sesión'}</Text>
+        </Pressable>
+        {!pending && <RouteButton href="/signup" label="Ir a Registro" />}
+      </NavigationScreen>
+    </KeyboardAvoidingView>
   );
 }
-
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  container: { flex: 1 },
+  field: { gap: 8 },
+  label: { fontSize: 16, color: NavigationColors.text, fontWeight: '600' },
+  input: { minHeight: 48, borderWidth: 1, borderColor: NavigationColors.secondary, borderRadius: 10, padding: 12, fontSize: 17, color: NavigationColors.text, backgroundColor: '#FFFFFF' },
+  invalidInput: { borderColor: '#A12E28' },
+  error: { color: '#A12E28', fontSize: 15, lineHeight: 23 },
+  button: { minHeight: 48, backgroundColor: NavigationColors.primary, padding: 16, borderRadius: 12, alignItems: 'center', gap: 8 },
+  buttonText: { color: NavigationColors.onPrimary, fontWeight: '600', fontSize: 16, textAlign: 'center' },
+  pending: { opacity: 0.7 },
 });

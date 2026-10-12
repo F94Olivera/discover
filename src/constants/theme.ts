@@ -63,3 +63,13 @@ export const Spacing = {
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
+
+// Shared palette for the initial tourism navigation screens.
+export const NavigationColors = {
+  background: '#FAF8F4',
+  text: '#182D2B',
+  secondary: '#465B58',
+  primary: '#14665D',
+  onPrimary: '#FFFFFF',
+  surface: '#EAEFEA',
+} as const;

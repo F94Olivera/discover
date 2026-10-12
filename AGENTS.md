@@ -9,10 +9,10 @@ Implement an **academic tourism app** using Expo + React Native + TypeScript tha
 
 - **Local** sign-up/sign-in and sign-out.
 - A read-only catalog of **20 predefined tourist destinations**.
-- Destination Details and independent favorites for each user.
+- Destination Details and independent favorites integrated into Places for each user, with favorites sorted first.
 - Creating, editing, and deleting **user-owned destinations**, shown in a dynamic `FlatList`.
 - Persisting users, session, custom destinations, and favorites in **AsyncStorage**.
-- Displaying an **approximate compass direction toward a destination** using device sensors and location.
+- Displaying an **approximate compass direction toward a destination** on a dedicated Compass screen using device sensors and location.
 
 Prioritize **rubric compliance, readability, and the ability to explain the code during the oral defense** over sophisticated architecture or extra features.
 
@@ -20,7 +20,7 @@ Prioritize **rubric compliance, readability, and the ability to explain the code
 
 1. Use **Expo (a stable SDK compatible with Expo Go)**, **React Native**, and **TypeScript**.
 2. Use **functional components and hooks only**. Do not introduce class components.
-3. Implement real **Stack/Tab navigation**. Prefer Expo Router if the existing project uses it or the project is initialized from a suitable template.
+3. Implement real **Stack navigation**; Tabs are optional. Prefer Expo Router if the existing project uses it or the project is initialized from a suitable template.
 4. Use **FlatList** for the main dynamic list.
 5. Validate forms and provide consistent visual feedback.
 6. Use **Flexbox** and avoid layouts designed for only one screen size.
@@ -35,35 +35,29 @@ Prioritize **rubric compliance, readability, and the ability to explain the code
 ```text
 src/
 ├── app/
-│   ├── _layout.tsx                 # providers + root navigation
+│   ├── _layout.tsx                 # providers + root Stack
 │   ├── (auth)/
 │   │   ├── login.tsx
 │   │   └── signup.tsx
 │   └── (app)/
-│       ├── _layout.tsx             # authenticated route protection
-│       ├── (tabs)/
-│       │   ├── _layout.tsx
-│       │   ├── index.tsx           # Explore
-│       │   └── favorites.tsx       # Favorites
+│       ├── _layout.tsx             # protected Stack
+│       ├── index.tsx               # Places + favorite hearts/order + sign-out
+│       ├── compass/[id].tsx        # dedicated orientation screen
 │       └── destination/
-│           ├── [id].tsx            # Details + orientation
-│           └── form.tsx            # Create/edit using id parameter
-├── components/                     # reusable UI
-├── features/
-│   ├── auth/                       # forms and session logic
-│   ├── destinations/               # CRUD, lists, validation
-│   ├── favorites/                  # toggle, per-user selectors
-│   └── compass/                    # sensors and bearing calculations
-├── data/
-│   └── defaultDestinations.ts      # exactly 20 fixed destinations
-├── storage/                        # AsyncStorage + serialization
-├── context/                        # minimal shared state (session/data)
-├── types/                          # shared types
+│           ├── [id].tsx            # Details
+│           └── form.tsx            # create/edit
+├── components/                     # reusable UI as needed
+├── features/                       # auth, destinations, favorites, compass
+├── data/defaultDestinations.ts     # exactly 20 seeds from PLACES.md
+├── storage/                        # validation, persistence and recovery
+├── context/                        # minimal single source of truth
+├── types/
 └── utils/                          # pure helpers
-README.md
+README.md                           # Spanish
 REQUIREMENTS.md
 FLOWS.md
 AGENTS.md
+PLACES.md
 ```
 
 This structure is a **suggestion**, not an instruction to create empty folders. If the repository already has a reasonable structure, preserve it and explain changes. Avoid duplicating state and business logic across screens.
@@ -114,7 +108,7 @@ Invariants:
 ## 6. Native compass feature
 
 - Prefer **`expo-location`** (position and heading), ensuring compatibility with the installed Expo Go version.
-- Request **foreground location permission when the user taps the orientation action**, not during registration or app launch.
+- Request **foreground location permission when the user taps Start Orientation on the dedicated Compass screen**, not during registration or app launch.
 - Use a **pure function** to calculate the geographic bearing toward the destination and its relative angle based on device orientation.
 - Verify heading availability and quality. If invalid, show an error state rather than inventing a direction.
 - Subscribe and unsubscribe from listeners when starting/stopping orientation or unmounting the screen.
@@ -123,7 +117,7 @@ Invariants:
 
 ## 7. Conventions and code quality
 
-- Write code, types, and function names in **English**. Keep `AGENTS.md`, `FLOWS.md`, and `REQUIREMENTS.md` in **English**. The **application interface must be in Spanish**, including screen titles, buttons, labels, form validations, status messages, errors, and explanations of device permissions. The README language has not yet been confirmed; do not impose a language without approval.
+- Write code, types, and function names in **English**. Keep `AGENTS.md`, `FLOWS.md`, and `REQUIREMENTS.md` in **English**. The **application interface must be in Spanish**, including screen titles, buttons, labels, form validations, status messages, errors, and explanations of device permissions. The README must be in Spanish. Profile and i18n are deferred until the core assignment is complete.
 - Type props, routes, entities, and functions; avoid `any`, unnecessary casts, and unvalidated objects loaded from storage.
 - Give UI components a single responsibility; separate bearing calculations and CRUD operations from screen JSX.
 - Prefer small, explicit solutions. Do not introduce Redux, ORM, HTTP services, complex patterns, or empty layers without a concrete reason.
@@ -136,9 +130,9 @@ Invariants:
 
 1. **Before coding:** read `REQUIREMENTS.md`, `FLOWS.md`, and this file; inspect existing code.
 2. First identify rubric essentials: **Expo Go, navigation, FlatList, CRUD, validation, Flexbox, native feature, and technical defense**.
-3. Build in verifiable increments: **(a)** navigation/authentication, **(b)** catalog/details, **(c)** CRUD, **(d)** per-user favorites, **(e)** AsyncStorage/restart, **(f)** compass and fallbacks.
+3. Build one small feature per delivery using REQUIREMENTS.md Section 10. Include AsyncStorage/restart checks with each mutable feature from the beginning; implement user isolation alongside every relevant action. Review each increment with the user before advancing. Review framework/hardware compatibility at baseline; test physical sensors on the iPhone 14 Pro at step 13.
 4. For each change, check TypeScript errors and run **existing** project validation commands. Do not claim tests passed unless they were executed.
-5. Manually test at least the **12 scenarios** in Section 8 of `REQUIREMENTS.md`, distinguishing those that require a physical phone.
+5. Manually test all **16 scenarios** in Section 8 of `REQUIREMENTS.md`, distinguishing those that require a physical phone.
 6. If a requirement cannot work in Expo Go, **stop and explain why**; do not silently replace it or add custom native development.
 7. Before final submission, update `README.md` with installation, `npx expo start`, structure, dependencies, **justifications**, and AI-use disclosure.
 8. When delivering changes, summarize **what changed, which files were affected, how to test, and what remains pending**.
@@ -153,8 +147,14 @@ Invariants:
 - Do not pin an Expo version without checking which stable version is compatible when setting up the project.
 - Do not modify earlier exercises or existing repository components unless necessary for this final project.
 
-## 10. Documented pending decisions
+## 10. Confirmed decisions and remaining verification
 
-See Section 9 of `REQUIREMENTS.md`. Items needing external confirmation are: **catalog/region of the 20 destinations (S-01)**, **instructor's expected screen count (S-06)**, **phone/platform for demonstrating sensors (S-07)**, and **current dates (S-08)**.
-
-Until these answers are available, architecture, screens, and features may be implemented using **clearly labeled sample data**, but **do not** consider the catalog final or the real-device compass demonstration complete.
+- The user has already checked assignment/rubric coverage; do not request the original assignment again.
+- S-01: the confirmed 20 CABA destinations and source-linked coordinates are in PLACES.md. Bundle them in code when implementing the catalog.
+- S-02: successful registration saves account/session and automatically opens Places.
+- S-06: minimum functional areas are access, Places with integrated favorites, and dedicated Compass; Details/Form are supporting screens. No separate Favorites tab is needed.
+- Favorite hearts persist before confirmed visual changes. Sort favorites first, preserving base order within each group; removing a favorite restores relative position. Base order is PLACES.md seed order followed by custom creation order.
+- S-07: iOS is preferred. The device is confirmed as iPhone 14 Pro; installed iOS/Expo Go versions remain to be verified and physical sensors will be tested at step 13; simulator checks cannot complete compass acceptance.
+- S-08: ignore obsolete 2025 assignment dates at the user's instruction; do not require replacement dates to begin.
+- S-10: Spanish UI and README; English code and these three specification documents. No Profile/i18n in initial scope.
+- Define recoverable behavior for invalid stored data and partial multi-key writes before implementing persistence actions; no silent reset or false success.
