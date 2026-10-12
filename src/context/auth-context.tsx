@@ -1,3 +1,4 @@
+import { createDeleteDestinationService, recoverDeletion, type DeleteDestinationResult } from '@/features/destinations/deletion';
 import { createFavoriteService, FAVORITES_KEY, parseFavorites, type Favorite, type FavoriteResult } from '@/features/favorites/favorites';
 import { createUpdateDestinationService } from '@/features/destinations/update';
 import * as Crypto from 'expo-crypto';
@@ -14,6 +15,7 @@ import type { Session, SigninInput, SigninResult, SignoutResult, SignupInput, Si
 
 const storage = createAuthStorage(AsyncStorage);
 type AuthContextValue = {
+  deleteDestination: (id: string) => Promise<DeleteDestinationResult>;
   favorites: readonly Favorite[];
   favoritePending: boolean;
   toggleFavorite: (id: string) => Promise<FavoriteResult>;
@@ -32,6 +34,7 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const deleting = useRef(createDeleteDestinationService(AsyncStorage));
   const favoriting = useRef(createFavoriteService(AsyncStorage));
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [favoritePending, setFavoritePending] = useState(false);
@@ -49,14 +52,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true;
     void (async () => {
+      let recovering = false;
       try {
         const restored = await restoreSession(storage);
-        const destinations = parseDestinations(await AsyncStorage.getItem(DESTINATIONS_KEY));
         const users = await storage.readUsers();
+        recovering = true;
+        await recoverDeletion(AsyncStorage, users.map(account => account.id));
+        recovering = false;
+        const destinations = parseDestinations(await AsyncStorage.getItem(DESTINATIONS_KEY));
         const savedFavorites = parseFavorites(await AsyncStorage.getItem(FAVORITES_KEY), users.map(account => account.id), destinations);
         if (active) { setFavorites(savedFavorites); setCustomDestinations(destinations); setUser(restored.user); setSession(restored.session); setError(null); setLoading(false); }
       } catch {
-        if (active) { setError('No pudimos leer las cuentas, la sesión, los destinos o los favoritos. Los datos se conservan. Reintentá; si el problema continúa, revisá el almacenamiento.'); setLoading(false); }
+        if (active) { setError(recovering ? 'No pudimos recuperar una eliminación pendiente. Los datos se conservan. Reintentá la lectura para completar la baja.' : 'No pudimos leer las cuentas, la sesión, los destinos o los favoritos. Los datos se conservan. Reintentá; si el problema continúa, revisá el almacenamiento.'); setLoading(false); }
       }
     })();
     return () => { active = false; };
@@ -108,6 +115,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return result;
     } finally { operating.current = false; }
   }, [loading, error, session]);
+  const deleteDestination = useCallback(async (id: string): Promise<DeleteDestinationResult> => {
+    if (loading || error || operating.current) return { status: 'error', message: 'Esperá a que se puedan leer los datos o termine la operación.', recoveryRequired: false };
+    operating.current = true;
+    try {
+      const users = await storage.readUsers();
+      const result = await deleting.current(session?.userId ?? null, id, users.map(account => account.id));
+      if (result.status === 'success') { setCustomDestinations(result.destinations); setFavorites(result.favorites); }
+      else if (result.recoveryRequired) setError(result.message);
+      return result;
+    } catch {
+      return { status: 'error', message: 'No pudimos leer las cuentas. Reintentá.', recoveryRequired: false };
+    } finally { operating.current = false; }
+  }, [loading, error, session]);
   const toggleFavorite = useCallback(async (id: string): Promise<FavoriteResult> => {
     if (loading || error || operating.current) return { status: 'error', message: 'Esperá a que se puedan leer los datos o termine la operación.' };
     operating.current = true;
@@ -122,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { status: 'error', message: 'No pudimos leer los favoritos. Reintentá.' };
     } finally { operating.current = false; setFavoritePending(false); }
   }, [loading, error, session, favorites, customDestinations]);
-  return <AuthContext.Provider value={{ favorites, favoritePending, toggleFavorite, updateDestination, customDestinations, createDestination, user, session, loading, error, retryLoad, signUp, signIn, signOut }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ deleteDestination, favorites, favoritePending, toggleFavorite, updateDestination, customDestinations, createDestination, user, session, loading, error, retryLoad, signUp, signIn, signOut }}>{children}</AuthContext.Provider>;
 }
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext);

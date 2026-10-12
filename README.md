@@ -4,9 +4,8 @@ Aplicación académica de turismo con Expo, React Native y TypeScript, orientada
 
 ## Estado actual
 
-El paso 2 incorpora un Stack de Expo Router con Login, Registro, Lugares, Detalles, Formulario y Brújula. El paso 3 agrega registro local real: formulario validado, guardado de cuenta y sesión, y entrada automática a Lugares al registrarse. El paso 4 agrega Login/logout, restauración de sesión y rutas protegidas. El paso 5 incorpora los 20 destinos locales en una FlatList y el paso 6 permite seleccionar un lugar y consultar sus detalles reales. El paso 7 agrega destinos propios con validación, persistencia y aislamiento por cuenta. El paso 8 permite editar destinos propios desde Detalles, con guardado persistente y validación de propiedad. El paso 9 incorpora favoritos persistentes por cuenta en Lugares y Detalles, con corazones accesibles y orden estable. Las funcionalidades siguientes todavía no están implementadas:
+El paso 2 incorpora un Stack de Expo Router con Login, Registro, Lugares, Detalles, Formulario y Brújula. El paso 3 agrega registro local real: formulario validado, guardado de cuenta y sesión, y entrada automática a Lugares al registrarse. El paso 4 agrega Login/logout, restauración de sesión y rutas protegidas. El paso 5 incorpora los 20 destinos locales en una FlatList y el paso 6 permite seleccionar un lugar y consultar sus detalles reales. El paso 7 agrega destinos propios con validación, persistencia y aislamiento por cuenta. El paso 8 permite editar destinos propios desde Detalles, con guardado persistente y validación de propiedad. El paso 9 incorpora favoritos persistentes por cuenta en Lugares y Detalles, con corazones accesibles y orden estable. El paso 10 agrega eliminación confirmada y limpieza de favoritos con recuperación de escrituras parciales. Las funcionalidades siguientes todavía no están implementadas:
 
-- Eliminación de destinos propios.
 - Pantalla de brújula con orientación aproximada hacia un destino.
 
 La interfaz y este README están en español. Perfil e internacionalización quedan fuera de la primera versión.
@@ -53,7 +52,7 @@ La orientación deberá probarse en un iPhone físico; el simulador no reemplaza
 
 ## Uso de inteligencia artificial
 
-Se utilizó Codex para elaborar y revisar la especificación, alinear los flujos y recopilar el catálogo con fuentes enlazadas. También se utilizó para implementar y verificar la navegación mínima del paso 2 y el registro local y sus pruebas del paso 3, además de Login/logout, restauración, protección de rutas y auditoría del paso 4, el catálogo, selector por usuario y verificación del paso 5, y Detalles con resolución autorizada de IDs, navegación y auditoría del paso 6, y creación de destinos, recuperación de errores, pruebas y auditoría del paso 7, además de edición y auditoría del paso 8 y favoritos, pruebas y auditoría del paso 9. El usuario revisa las decisiones y los incrementos. Esta sección se actualizará para reflejar la asistencia utilizada durante la implementación.
+Se utilizó Codex para elaborar y revisar la especificación, alinear los flujos y recopilar el catálogo con fuentes enlazadas. También se utilizó para implementar y verificar la navegación mínima del paso 2 y el registro local y sus pruebas del paso 3, además de Login/logout, restauración, protección de rutas y auditoría del paso 4, el catálogo, selector por usuario y verificación del paso 5, y Detalles con resolución autorizada de IDs, navegación y auditoría del paso 6, y creación de destinos, recuperación de errores, pruebas y auditoría del paso 7, además de edición y auditoría del paso 8 y favoritos, pruebas y auditoría del paso 9, además de eliminación recuperable, pruebas y auditoría del paso 10. El usuario revisa las decisiones y los incrementos. Esta sección se actualizará para reflejar la asistencia utilizada durante la implementación.
 
 ## Probar el paso 2
 
@@ -101,7 +100,7 @@ Ejecutar `npm run test:catalog` para contrastar exactamente IDs, nombres, coorde
 
 ## Detalles — paso 6
 
-En Lugares, tocar una fila abre Detalles con nombre, descripción, latitud, longitud y origen. Los destinos predefinidos indican «Solo lectura». Editar aparece únicamente para destinos propios; favoritos y eliminar se incorporarán en sus pasos. El enlace a Brújula aclara que está en desarrollo, lleva el ID real y muestra el nombre seleccionado; todavía no pide permisos ni activa sensores.
+En Lugares, tocar una fila abre Detalles con nombre, descripción, latitud, longitud y origen. Los destinos predefinidos indican «Solo lectura». Editar aparece únicamente para destinos propios; favoritos y eliminar están disponibles para los destinos propios. El enlace a Brújula aclara que está en desarrollo, lleva el ID real y muestra el nombre seleccionado; todavía no pide permisos ni activa sensores.
 
 «Volver a Lugares» usa `dismissTo`: regresa a la lista existente o reemplaza la ruta si se abrió directamente, evitando duplicar Lugares en el historial. El Atrás del Stack también funciona. Un ID inválido, inexistente, múltiple o ajeno muestra el mismo aviso, sin revelar datos privados, y ofrece un retorno seguro.
 
@@ -136,3 +135,14 @@ En Lugares, tocar el corazón de Floralis y luego el de Teatro Colón: ambos que
 `src/components/favorite-button.tsx` comparte el botón y feedback; `src/context/auth-context.tsx` concentra estado y acción `toggleFavorite`. `src/features/favorites/favorites.ts` valida pares y referencias, persiste en `tourism.favorites.v1` y agrupa sin cambiar el orden base. `use-destinations.ts` aplica el orden a FlatList. El guardado usa el estado final solicitado, así un reintento tras un error posterior a la escritura no invierte accidentalmente el favorito. El estado confirmado cambia únicamente después de una escritura exitosa. Datos inválidos bloquean carga con aviso y reintento, sin reset.
 
 Ejecutar `npm run test:favorites`; junto con las suites existentes verifica aislamiento, orden, errores y recuperación con almacenamiento controlado. La auditoría manual se hizo en Expo Go del simulador; no se acredita prueba física ni fallo real de AsyncStorage. No se incorporaron dependencias. Eliminación y brújula siguen pendientes en sus pasos.
+
+
+## Eliminación de destinos propios — paso 10
+
+Desde Detalles de un destino propio, «Eliminar destino» muestra confirmación con Cancelar/Eliminar. Cancelar conserva destino y favorito. Confirmar persiste la baja y la limpieza de sus favoritos antes de volver a Lugares; un indicador y un bloqueo evitan operaciones repetidas. Los seeds y destinos ajenos se rechazan también en el servicio.
+
+`src/features/destinations/deletion.ts` guarda primero un registro pendiente en `tourism.deletion.v1` con el resultado validado de ambas colecciones. Luego escribe favoritos, destinos y retira el registro. No es una transacción atómica de AsyncStorage: si falla una parte, el contexto conserva el estado confirmado y muestra un aviso que bloquea nuevas operaciones. «Reintentar lectura» o reiniciar completa la baja pendiente antes de habilitar navegación. Si la escritura del registro no llegó a guardarse, la lectura conserva el destino y permite repetir la baja. JSON inválido bloquea recuperación sin sobrescribirlo. Una promesa rechazada nunca anuncia éxito, incluso si la escritura sí llegó al dispositivo.
+
+Para defender el código: Detalles → confirmación → `deleteDestination` del contexto (sesión y bloqueo común) → servicio (propiedad y registro pendiente) → persistencia → estado compartido → Lugares. La hidratación llama `recoverDeletion` antes de validar favoritos. Ambos selectores resuelven siempre las colecciones confirmadas, sin copiar la entidad en la pantalla.
+
+Validar con `npm run test:deletion`: favorito/no favorito, permisos, datos inválidos, concurrencia y fallos antes/después de cada escritura y de la limpieza, con recuperación por lectura. La prueba manual en Expo Go del simulador incluyó cancelar una baja, crear y borrar dos destinos ficticios autorizados y recargar. Los fallos de almacenamiento se probaron con un adaptador controlado; no se provocaron fallos físicos de AsyncStorage. Reload reinicia JavaScript e hidrata los datos, no termina el proceso del sistema. El iPhone 14 Pro físico y los sensores siguen pendientes del paso 13.

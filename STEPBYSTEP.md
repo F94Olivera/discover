@@ -213,17 +213,17 @@ Repetir estas comprobaciones en cada paso que cambie código; registrar resultad
 
 **Resultado esperado:** baja con confirmación y limpieza de favoritos.
 
-- [ ] Mostrar Eliminar solo para custom propios y verificar propiedad en dominio.
-- [ ] Abrir confirmación en español con Cancelar/Eliminar.
-- [ ] Cancelar y verificar destino/favorito intactos.
-- [ ] Definir recuperación si falla parte del guardado destino/favoritos.
-- [ ] Borrar destino y todas sus referencias favoritas en un mismo cambio lógico.
-- [ ] Confirmar éxito solo tras completar persistencia y regresar a Lugares.
-- [ ] Verificar que filas y Detalles no conserven entidad eliminada.
-- [ ] Rechazar eliminación de seeds o custom ajenos, incluso desde llamadas directas.
-- [ ] Probar borrado de un favorito y de un no favorito, y reiniciar.
-- [ ] Probar fallos/reintentos sin éxito falso ni referencias huérfanas.
-- [ ] Completar la verificación común de entrega.
+- [x] Mostrar Eliminar solo para custom propios y verificar propiedad en dominio.
+- [x] Abrir confirmación en español con Cancelar/Eliminar.
+- [x] Cancelar y verificar destino/favorito intactos.
+- [x] Definir recuperación si falla parte del guardado destino/favoritos.
+- [x] Borrar destino y todas sus referencias favoritas en un mismo cambio lógico.
+- [x] Confirmar éxito solo tras completar persistencia y regresar a Lugares.
+- [x] Verificar que filas y Detalles no conserven entidad eliminada.
+- [x] Rechazar eliminación de seeds o custom ajenos, incluso desde llamadas directas.
+- [x] Probar borrado de un favorito y de un no favorito, y reiniciar.
+- [x] Probar fallos/reintentos sin éxito falso ni referencias huérfanas.
+- [x] Completar la verificación común de entrega.
 
 ## Paso 11 — Cálculo de orientación
 
@@ -574,3 +574,32 @@ Se marca el check restante de Flexbox en dos tamaños: **paso 2, 10/10 completo*
 **Recuperación/defensa:** botón → toggle del contexto con sesión y bloqueo → servicio valida referencia y relee favoritos → una escritura de clave versionada → estado confirmado → partición estable → FlatList/Detalles. Se solicita estado final a partir del estado confirmado para recuperar escrituras que hayan persistido pero rechazado la promesa, sin doble inversión. No hay operación multi-clave en este paso. Parser inválido bloquea hidratación sin sobrescribir. El paso 10 deberá definir el cambio lógico de eliminación + limpieza de favoritos.
 
 **Límites:** errores de almacenamiento, concurrencia, A/B/A y edición de favorito se acreditan con funciones reales y datos controlados, no fallos físicos de AsyncStorage ni recorrido manual completo de esas variantes. Reload reinició ejecución JS, no terminó el proceso del sistema. Prueba física del iPhone 14 Pro y todos los 16 escenarios finales siguen pendientes en sus pasos. La entrega queda disponible para revisión.
+
+
+### 12 de octubre de 2026 — Paso 10: eliminación y auditoría
+
+**11/11 checks auditados y marcados.** Se cotejó cada criterio con código y evidencia diferenciada. El usuario autorizó implementación, auditoría, marcado y commit/push; también autorizó crear y borrar dos destinos ficticios en el simulador para completar la prueba manual. No se inició el paso 11. Los checks comunes globales permanecen como plantilla.
+
+**Archivos:** `src/app/destination/[id].tsx`, `src/context/auth-context.tsx`, nuevo `src/features/destinations/deletion.ts`, nuevo `scripts/test-deletion.cjs`, comando en `package.json`, README y esta lista. Sin dependencias nuevas.
+
+| Check | Evidencia |
+| --- | --- |
+| Eliminar solo custom propios + dominio | Detalles usa resolver visible y source custom. Servicio relee destinos y exige cuenta existente y ownerId. Obelisco no mostró Editar/Eliminar en UI |
+| Confirmación en español | Alert con nombre, advertencia de limpieza y Cancelar/Eliminar observado en Expo Go |
+| Cancelar conserva destino/favorito | Cancelar sobre Cancha de Boca conservó Detalles, coordenadas y corazón seleccionado; volvió a lista intacta |
+| Recuperación parcial definida | Registro previo `tourism.deletion.v1`; completar favoritos/destinos y retirar registro; fallos bloquean navegación/mutaciones hasta lectura/reinicio validado. No se promete atomicidad física |
+| Baja y referencias en un cambio lógico | Servicio filtra ID de destinos y todas sus referencias favoritas; devuelve ambas colecciones solo al terminar; tests preservan datos de B |
+| Persistir antes de éxito/retorno | Escrituras y limpieza awaited antes de success; contexto actualiza ambas colecciones; dismissTo Lugares observado |
+| Sin entidad obsoleta | Test del selector real devuelve null tras baja; lista sin Test10A/B y retorno a Lugares manual. No se acredita apertura manual de deep link borrado |
+| Rechazar seeds/ajenos/directos | Tests del servicio con seed, ajeno, anónimo, usuario ausente e ID desconocido: error sin escritura |
+| Favorito/no favorito + reinicio | Test10A marcado y borrado; Test10B sin favorito borrado. Reload de Expo Go: 21 lugares originales, tres favoritos previos, sin ambos destinos ficticios. Además rehidratación con parsers reales en tests |
+| Fallos/reintentos | Ocho fallos: antes/después del registro, favoritos, destinos y removeItem; ningún resultado success, recuperación antes de hidratar deja colecciones válidas sin huérfanos. Pending bloquea otra baja; JSON inválido/read failure/concurrencia probados |
+| Verificación común | Reglas/alcance revisados; componentes funcionales/TypeScript/español; pending/error y accesibilidad; tipos/lint/suites/diff, revisión del código nuevo; happy path y cancelar manual, errores de almacenamiento controlados; defensa en README, entrega para revisión sin avanzar |
+
+**Comandos ejecutados:** `npx tsc --noEmit`, `npm run lint`, `npm run test:auth` (18/18), `npm run test:catalog`, `npm run test:destinations`, `npm run test:favorites`, `npm run test:deletion` y `git diff --check`: exit 0. Tras mejorar el mensaje de recuperación de arranque y el test de bloqueo, se repitieron tipos/lint/deletion. Revisión del diff y contenido de archivos nuevos realizada.
+
+**Manual:** Expo Go / Device Hub, iPhone 18 Pro / iOS 27.0 simulado, cuenta B existente. Cancha de Boca → Eliminar → Cancelar; destino y favorito intactos. Crear Test10A, marcar favorito, abrir Detalles, confirmar baja: Lugares 22 → 21, sin entidad de prueba. Crear Test10B sin favorito, confirmar baja: mismo retorno y contador. Reload mostró primero Leyendo datos locales y luego Lugares con 21 y los tres favoritos originales, sin los dos ficticios. Obelisco mostró solo lectura, sin acciones de edición/baja. Se volvió a Lugares. La entrada inicial tuvo autocorrección y una pega que recibió contenido viejo del clipboard; se corrigieron los campos antes de guardar y se verificaron los nombres reales Test10A/B. Los dos datos ficticios se eliminaron con autorización explícita; los destinos previos permanecen. Se observó árbol accesible y capturas de Detalles/lista; Metro existente se conservó.
+
+**Defensa/recuperación:** confirmación → contexto con sesión y bloqueo común → servicio con ownership → registro pendiente validado → favoritos → destinos → retirar registro → estado compartido → Lugares. Es un protocolo recuperable entre claves, no una transacción atómica: puede existir estado parcial en disco mientras haya registro, pero la app no habilita navegación antes de completar recuperación. Una promesa rechazada después de guardar también devuelve error y exige lectura. Si el registro no se persistió, la lectura conserva el destino y permite repetir. Registro inválido se preserva y bloquea la carga.
+
+**Límites:** fallos físicos de AsyncStorage y recorrido visual de recuperación no se provocaron; se acreditan con el servicio real y adaptador controlado. Reload reinició JS, no terminó el proceso del sistema. No se acreditan los 16 escenarios finales completos ni prueba física del iPhone 14 Pro; sensores siguen en paso 13. La entrega queda disponible para revisión.
