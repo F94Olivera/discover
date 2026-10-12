@@ -1,3 +1,4 @@
+import { FavoriteButton } from '@/components/favorite-button';
 import { Link, Stack } from 'expo-router';
 import { useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -54,7 +55,7 @@ export default function PlacesScreen() {
                 <Text style={styles.origin}>{item.source === 'seed' ? 'Catálogo predefinido' : 'Destino propio'}</Text>
               </Pressable>
             </Link>
-            <View style={styles.favoriteSpace} accessible={false} />
+            <FavoriteButton destinationId={item.id} name={item.name} />
           </View>
         )}
         ListEmptyComponent={<Text style={styles.description}>No hay destinos disponibles.</Text>}
@@ -75,5 +76,4 @@ const styles = StyleSheet.create({
   rowContent: { flex: 1, gap: 6, minHeight: 48, justifyContent: 'center' },
   name: { fontSize: 18, lineHeight: 26, fontWeight: '600', color: NavigationColors.text },
   origin: { fontSize: 14, lineHeight: 21, color: NavigationColors.secondary },
-  favoriteSpace: { width: 48, minHeight: 48 },
 });

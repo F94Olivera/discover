@@ -193,21 +193,21 @@ Repetir estas comprobaciones en cada paso que cambie código; registrar resultad
 
 **Resultado esperado:** corazón funcional, orden estable y aislamiento por usuario.
 
-- [ ] Definir Favorite por userId/destinationId y validar datos persistidos.
-- [ ] Implementar toggleFavorite sin duplicados ni referencias a destinos ajenos/invisibles.
-- [ ] Añadir corazón vacío y corazón lleno rojo en cada fila y acción equivalente en Detalles.
-- [ ] Añadir etiquetas/estado accesible y área táctil adecuada.
-- [ ] Evitar que tocar corazón abra Detalles.
-- [ ] Mostrar pending y bloquear toques repetidos mientras guarda.
-- [ ] Conservar corazón/orden confirmados hasta completar persistencia.
-- [ ] Ordenar favoritos primero respetando orden base dentro de ambos grupos.
-- [ ] Desmarcar y comprobar retorno a posición relativa original.
-- [ ] Verificar funcionamiento para seeds y custom propios.
-- [ ] Verificar coherencia entre Detalles y lista, incluido texto editado de custom.
-- [ ] Probar lista sin favoritos y varios favoritos marcados en distinto orden temporal.
-- [ ] Probar reinicio y cambio A/B/A sin filtración de favoritos.
-- [ ] Probar error de escritura: estado previo conservado y reintento posible.
-- [ ] Completar la verificación común de entrega.
+- [x] Definir Favorite por userId/destinationId y validar datos persistidos.
+- [x] Implementar toggleFavorite sin duplicados ni referencias a destinos ajenos/invisibles.
+- [x] Añadir corazón vacío y corazón lleno rojo en cada fila y acción equivalente en Detalles.
+- [x] Añadir etiquetas/estado accesible y área táctil adecuada.
+- [x] Evitar que tocar corazón abra Detalles.
+- [x] Mostrar pending y bloquear toques repetidos mientras guarda.
+- [x] Conservar corazón/orden confirmados hasta completar persistencia.
+- [x] Ordenar favoritos primero respetando orden base dentro de ambos grupos.
+- [x] Desmarcar y comprobar retorno a posición relativa original.
+- [x] Verificar funcionamiento para seeds y custom propios.
+- [x] Verificar coherencia entre Detalles y lista, incluido texto editado de custom.
+- [x] Probar lista sin favoritos y varios favoritos marcados en distinto orden temporal.
+- [x] Probar reinicio y cambio A/B/A sin filtración de favoritos.
+- [x] Probar error de escritura: estado previo conservado y reintento posible.
+- [x] Completar la verificación común de entrega.
 
 ## Paso 10 — Eliminar destino propio
 
@@ -541,3 +541,36 @@ Se marca el check restante de Flexbox en dos tamaños: **paso 2, 10/10 completo*
 **Manual:** Expo Go, iPhone 18 Pro, iOS 27.0 simulado, cuenta B previamente activa. Abrir custom, precarga completa, cancelar cambio, rechazar nombre vacío conservando los otros campos, guardar nombre temporal y ver Detalles/lista, Reload y comprobar restauración. Finalmente guardar el nombre original «Cancha de Boca», preservando descripción y coordenadas. La navegación por enlace desde Safari no pudo completarse mediante la herramienta; el rechazo se acredita por pruebas automatizadas del resolver real, no por observación visual. La captura de pantalla de Device Hub no estuvo disponible; evidencia manual basada en árbol de accesibilidad.
 
 **Defensa:** ruta → resolver autorizado → campos de formulario → acción del contexto con sesión → servicio con propiedad y validación → escritura única → estado confirmado → Detalles/FlatList. No hay escrituras de seeds ni cambios de ownerId/ID/orden. Pendientes fuera del paso: favoritos, eliminación y sensores; prueba física del iPhone 14 Pro según pasos 1/13. No se acreditan todos los escenarios finales ni errores físicos de almacenamiento.
+
+
+### 12 de octubre de 2026 — Paso 9: favoritos y auditoría
+
+**15/15 checks auditados y marcados.** El usuario autorizó implementación, auditoría, marcado y commit/push. No se inició el paso 10. Los checks comunes globales son una plantilla; la evidencia específica se registra aquí.
+
+**Archivos:** nuevo `src/features/favorites/favorites.ts`, nuevo `src/components/favorite-button.tsx`, contexto central, hook de destinos, Lugares/Detalles, nuevo `scripts/test-favorites.cjs`, comando en package.json, README y esta lista. Sin dependencias nuevas.
+
+| Check | Evidencia |
+| --- | --- |
+| Favorite y validación persistida | Pares tipados; parser unknown verifica estructura, cuentas existentes, visibilidad y duplicados antes de navegación; null significa colección vacía |
+| Toggle sin duplicados/ajenos | Servicio valida sesión y destino visible; elimina par previo antes de añadir; tests anónimo, ajeno y desconocido sin escrituras |
+| Corazones lista/Detalles | Componente común: ♡ y ♥ rojo, acción equivalente con texto en Detalles; UI real probada |
+| Accesibilidad y área | Labels españoles agregar/quitar + nombre, selected/disabled/busy, tamaño mínimo 48; selected observado en árbol accesible |
+| Corazón no navega | Botón hermano del enlace de fila; marcar Floralis conservó Lugares |
+| Pending/repetidos | Indicador, bloqueo global en contexto + ref síncrono por botón; test concurrente del servicio |
+| Estado previo hasta persistir | await setItem precede success/setFavorites; errores no cambian estado confirmado |
+| Favoritos primero/orden estable | Partición del orden base; tests y UI: marcados Floralis → Manzana → Teatro, mostrados Teatro → Floralis → Manzana |
+| Desmarcar restaura posición | Quitar Teatro desde Detalles; al volver quedó después de Obelisco entre no favoritos; test compara grupo completo |
+| Seeds y custom | Floralis/Teatro/Manzana y Cancha de Boca marcados en UI; tests ambos tipos |
+| Coherencia y edición | Detalles de Teatro seleccionado, desmarcado visible en lista; test cambia nombre de custom y conserva favorito/orden; ambos leen mismo contexto sin copia de entidad |
+| Ninguno/varios en distinto orden | Inicio manual sin favoritos; orden temporal distinto comprobado; tests colección vacía y varios |
+| Reinicio y A/B/A | Reload real de Expo Go rehidrató Floralis, Manzana y Cancha de Boca seleccionados al principio. A/B/A probado con serialización/parser/selectores reales; no cambio manual de cuentas en este incremento |
+| Fallo/retry | Adaptador controlado falla antes/después de escritura y lectura; error sin success, reintento idempotente para agregar/quitar, JSON inválido preservado |
+| Verificación común | Reglas/alcance revisados, código funcional/TypeScript/español, loading/error/accesibilidad; tipos/lint/suites/diff ejecutados; camino feliz y volver manual, error de persistencia automatizado; defensa/limitaciones documentadas, entrega para revisión sin avanzar |
+
+**Comandos:** `npx tsc --noEmit`, `npm run lint`, `npm run test:auth` (18/18), `npm run test:catalog`, `npm run test:destinations`, `npm run test:favorites` y `git diff --check`: exit 0. Auditoría del diff y archivos nuevos realizada.
+
+**Manual:** Expo Go en Device Hub, iPhone 18 Pro / iOS 27.0 simulado, cuenta ficticia B existente. Inicio sin favoritos; marcar Floralis, Manzana de las Luces y Teatro Colón; comprobar orden base; abrir Teatro, quitar favorito, volver y comprobar posición. Marcar Cancha de Boca; Reload desde menú de Expo Go y observar tres favoritos restaurados, incluidos custom y sesión. Captura visual mostró corazones vacíos y filas ajustadas; estados seleccionados/acciones y orden comprobados por árbol accesible. Los favoritos de prueba quedan guardados en esa cuenta. Metro existente se conservó. El enlace desde Safari quedó inicialmente bloqueado por limitación de click por coordenadas de la herramienta; se abrió Expo Go desde Spotlight y se completó la prueba.
+
+**Recuperación/defensa:** botón → toggle del contexto con sesión y bloqueo → servicio valida referencia y relee favoritos → una escritura de clave versionada → estado confirmado → partición estable → FlatList/Detalles. Se solicita estado final a partir del estado confirmado para recuperar escrituras que hayan persistido pero rechazado la promesa, sin doble inversión. No hay operación multi-clave en este paso. Parser inválido bloquea hidratación sin sobrescribir. El paso 10 deberá definir el cambio lógico de eliminación + limpieza de favoritos.
+
+**Límites:** errores de almacenamiento, concurrencia, A/B/A y edición de favorito se acreditan con funciones reales y datos controlados, no fallos físicos de AsyncStorage ni recorrido manual completo de esas variantes. Reload reinició ejecución JS, no terminó el proceso del sistema. Prueba física del iPhone 14 Pro y todos los 16 escenarios finales siguen pendientes en sus pasos. La entrega queda disponible para revisión.

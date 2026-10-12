@@ -4,11 +4,9 @@ Aplicación académica de turismo con Expo, React Native y TypeScript, orientada
 
 ## Estado actual
 
-El paso 2 incorpora un Stack de Expo Router con Login, Registro, Lugares, Detalles, Formulario y Brújula. El paso 3 agrega registro local real: formulario validado, guardado de cuenta y sesión, y entrada automática a Lugares al registrarse. El paso 4 agrega Login/logout, restauración de sesión y rutas protegidas. El paso 5 incorpora los 20 destinos locales en una FlatList y el paso 6 permite seleccionar un lugar y consultar sus detalles reales. El paso 7 agrega destinos propios con validación, persistencia y aislamiento por cuenta. El paso 8 permite editar destinos propios desde Detalles, con guardado persistente y validación de propiedad. Las funcionalidades siguientes todavía no están implementadas:
+El paso 2 incorpora un Stack de Expo Router con Login, Registro, Lugares, Detalles, Formulario y Brújula. El paso 3 agrega registro local real: formulario validado, guardado de cuenta y sesión, y entrada automática a Lugares al registrarse. El paso 4 agrega Login/logout, restauración de sesión y rutas protegidas. El paso 5 incorpora los 20 destinos locales en una FlatList y el paso 6 permite seleccionar un lugar y consultar sus detalles reales. El paso 7 agrega destinos propios con validación, persistencia y aislamiento por cuenta. El paso 8 permite editar destinos propios desde Detalles, con guardado persistente y validación de propiedad. El paso 9 incorpora favoritos persistentes por cuenta en Lugares y Detalles, con corazones accesibles y orden estable. Las funcionalidades siguientes todavía no están implementadas:
 
-- Favoritos por usuario integrados en la lista del catálogo.
 - Eliminación de destinos propios.
-- Favoritos persistentes; las cuentas, sesiones y destinos propios ya se guardan en AsyncStorage.
 - Pantalla de brújula con orientación aproximada hacia un destino.
 
 La interfaz y este README están en español. Perfil e internacionalización quedan fuera de la primera versión.
@@ -55,7 +53,7 @@ La orientación deberá probarse en un iPhone físico; el simulador no reemplaza
 
 ## Uso de inteligencia artificial
 
-Se utilizó Codex para elaborar y revisar la especificación, alinear los flujos y recopilar el catálogo con fuentes enlazadas. También se utilizó para implementar y verificar la navegación mínima del paso 2 y el registro local y sus pruebas del paso 3, además de Login/logout, restauración, protección de rutas y auditoría del paso 4, el catálogo, selector por usuario y verificación del paso 5, y Detalles con resolución autorizada de IDs, navegación y auditoría del paso 6, y creación de destinos, recuperación de errores, pruebas y auditoría del paso 7, además de edición y auditoría del paso 8. El usuario revisa las decisiones y los incrementos. Esta sección se actualizará para reflejar la asistencia utilizada durante la implementación.
+Se utilizó Codex para elaborar y revisar la especificación, alinear los flujos y recopilar el catálogo con fuentes enlazadas. También se utilizó para implementar y verificar la navegación mínima del paso 2 y el registro local y sus pruebas del paso 3, además de Login/logout, restauración, protección de rutas y auditoría del paso 4, el catálogo, selector por usuario y verificación del paso 5, y Detalles con resolución autorizada de IDs, navegación y auditoría del paso 6, y creación de destinos, recuperación de errores, pruebas y auditoría del paso 7, además de edición y auditoría del paso 8 y favoritos, pruebas y auditoría del paso 9. El usuario revisa las decisiones y los incrementos. Esta sección se actualizará para reflejar la asistencia utilizada durante la implementación.
 
 ## Probar el paso 2
 
@@ -130,3 +128,11 @@ En Detalles de un destino propio, tocar **Editar destino**. El formulario compar
 Para defenderlo: `selectors.ts` resuelve un custom autorizado; `destination/form.tsx` inicializa una copia de los campos para edición; `auth-context.tsx` toma el usuario de la sesión; `features/destinations/update.ts` relee y valida el almacenamiento, verifica propiedad y sustituye en el mismo índice conservando ID/ownerId/source. La única escritura usa `tourism.destinations.v1`. El contexto publica el resultado únicamente tras guardado exitoso. Ante fallo, mantiene el estado confirmado y el formulario conserva los valores para reintentar. Un fallo después de commit puede haber guardado datos: el reintento reemplaza el mismo ID y el reinicio lee lo realmente persistido, sin duplicar ni mover entidades.
 
 Validación ejecutada: TypeScript, lint, pruebas de destinos/catálogo/auth y diff sin errores. En Expo Go del iPhone 18 Pro / iOS 27.0 simulado se comprobó precarga, nombre vacío, cancelación, guardado, actualización de ambas pantallas y restauración tras **Reload** (reinicio de ejecución JavaScript e hidratación; no cierre del proceso). Se restauró el nombre original del destino usado para probar. Permisos de rutas y fallos de lectura/escritura se verificaron con parámetros y almacenamiento controlados usando las funciones reales; no se provocaron fallos físicos de AsyncStorage. El iPhone físico sigue pendiente en sus pasos previstos.
+
+## Probar y defender el paso 9
+
+En Lugares, tocar el corazón de Floralis y luego el de Teatro Colón: ambos quedan llenos rojos y Teatro aparece primero por su posición en el catálogo. El corazón no abre Detalles. Abrir Detalles y quitar un favorito; volver y comprobar su posición entre los no favoritos. Marcar un destino propio, editar su nombre y verificar ambos lugares. Recargar Expo Go para comprobar persistencia; cambiar de cuenta y regresar para verificar aislamiento.
+
+`src/components/favorite-button.tsx` comparte el botón y feedback; `src/context/auth-context.tsx` concentra estado y acción `toggleFavorite`. `src/features/favorites/favorites.ts` valida pares y referencias, persiste en `tourism.favorites.v1` y agrupa sin cambiar el orden base. `use-destinations.ts` aplica el orden a FlatList. El guardado usa el estado final solicitado, así un reintento tras un error posterior a la escritura no invierte accidentalmente el favorito. El estado confirmado cambia únicamente después de una escritura exitosa. Datos inválidos bloquean carga con aviso y reintento, sin reset.
+
+Ejecutar `npm run test:favorites`; junto con las suites existentes verifica aislamiento, orden, errores y recuperación con almacenamiento controlado. La auditoría manual se hizo en Expo Go del simulador; no se acredita prueba física ni fallo real de AsyncStorage. No se incorporaron dependencias. Eliminación y brújula siguen pendientes en sus pasos.

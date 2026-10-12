@@ -1,0 +1,57 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const ts = require('typescript');
+require.extensions['.ts'] = (module, filename) => module._compile(ts.transpileModule(fs.readFileSync(filename, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, filename);
+const { parseFavorites, sortFavoriteDestinations, createFavoriteService, FAVORITES_KEY } = require('../src/features/favorites/favorites.ts');
+const { selectVisibleDestinations } = require('../src/features/destinations/selectors.ts');
+const custom = [{ id: 'custom-one', ownerId: 'user-A', source: 'custom', name: 'Propio', description: 'Prueba', latitude: 0, longitude: 0 }];
+const users = ['user-A', 'user-B'];
+const base = selectVisibleDestinations('user-A', custom);
+async function main() {
+  let raw = null, failure = null, writes = 0;
+  const storage = { getItem: async () => raw, setItem: async (key, value) => {
+    assert.equal(key, FAVORITES_KEY); writes++;
+    if (failure === 'before') throw Error('write');
+    raw = value;
+    if (failure === 'after') throw Error('write');
+  } };
+  const save = createFavoriteService(storage);
+  const toggle = (user, id, selected) => save(user, id, selected, users, custom);
+  assert.deepEqual(parseFavorites(null, users, custom), []);
+  for (const value of ['{', '{}', '[{}]', JSON.stringify([{ userId: 'user-B', destinationId: 'custom-one' }]), JSON.stringify([{ userId: 'user-missing', destinationId: base[0].id }])]) assert.throws(() => parseFavorites(value, users, custom));
+  for (const [user, id] of [[null, base[0].id], ['user-B', 'custom-one'], ['user-A', 'seed-missing']]) assert.equal((await toggle(user, id, true)).status, 'error');
+  assert.equal(writes, 0);
+  assert.deepEqual(sortFavoriteDestinations(base, [], 'user-A'), base);
+  for (const id of ['custom-one', base[3].id, base[1].id]) assert.equal((await toggle('user-A', id, true)).status, 'success');
+  let favorites = parseFavorites(raw, users, custom);
+  assert.deepEqual(sortFavoriteDestinations(base, favorites, 'user-A').slice(0, 3).map(d => d.id), [base[1].id, base[3].id, 'custom-one']);
+  assert.equal((await toggle('user-A', base[1].id, true)).favorites.length, 3);
+  assert.throws(() => parseFavorites(JSON.stringify([...favorites, favorites[0]]), users, custom));
+  await toggle('user-A', base[1].id, false);
+  favorites = parseFavorites(raw, users, custom);
+  const ordered = sortFavoriteDestinations(base, favorites, 'user-A');
+  assert.deepEqual(ordered.slice(2), base.filter(d => d.id !== base[3].id && d.id !== 'custom-one'));
+  assert.deepEqual(sortFavoriteDestinations(selectVisibleDestinations('user-B', custom), favorites, 'user-B'), selectVisibleDestinations('user-B', custom));
+  await toggle('user-B', base[0].id, true);
+  assert.deepEqual(sortFavoriteDestinations(base, parseFavorites(raw, users, custom), 'user-A'), ordered); // A/B/A + restart
+  const edited = [{ ...custom[0], name: 'Editado' }];
+  assert.equal(sortFavoriteDestinations(selectVisibleDestinations('user-A', edited), favorites, 'user-A')[1].name, 'Editado');
+  const prior = raw;
+  failure = 'before'; assert.equal((await toggle('user-A', base[2].id, true)).status, 'error'); assert.equal(raw, prior);
+  failure = 'after'; assert.equal((await toggle('user-A', base[2].id, true)).status, 'error');
+  failure = null; assert.equal((await toggle('user-A', base[2].id, true)).status, 'success');
+  assert.equal(parseFavorites(raw, users, custom).filter(f => f.destinationId === base[2].id).length, 1);
+  failure = 'after'; assert.equal((await toggle('user-A', base[2].id, false)).status, 'error');
+  failure = null; assert.equal((await toggle('user-A', base[2].id, false)).status, 'success');
+  assert.ok(!parseFavorites(raw, users, custom).some(f => f.destinationId === base[2].id));
+  raw = '{invalid'; const before = writes; assert.equal((await toggle('user-A', base[0].id, true)).status, 'error'); assert.equal(raw, '{invalid'); assert.equal(writes, before);
+  const readFail = createFavoriteService({ ...storage, getItem: async () => { throw Error('read'); } });
+  assert.equal((await readFail('user-A', base[0].id, true, users, custom)).status, 'error');
+  raw = prior;
+  let release;
+  const slow = createFavoriteService({ ...storage, getItem: () => new Promise(resolve => { release = () => resolve(raw); }) });
+  const pending = slow('user-A', base[0].id, true, users, custom);
+  assert.equal((await slow('user-A', base[0].id, true, users, custom)).status, 'error'); release(); assert.equal((await pending).status, 'success');
+  console.log('Favoritos: validación, permisos, seeds/custom, unicidad, orden estable, desmarcado, edición, restauración A/B/A, fallos antes/después de escritura, reintento idempotente y concurrencia: OK');
+}
+main().catch(error => { console.error(error); process.exitCode = 1; });

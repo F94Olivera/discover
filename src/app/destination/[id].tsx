@@ -1,3 +1,4 @@
+import { FavoriteButton } from '@/components/favorite-button';
 import { useLocalSearchParams } from 'expo-router';
 
 import { StyleSheet, Text, View } from 'react-native';
@@ -18,7 +19,8 @@ export default function DestinationDetailsScreen() {
         <Text style={styles.coordinate}>Latitud: {destination.latitude}</Text>
         <Text style={styles.coordinate}>Longitud: {destination.longitude}</Text>
       </View>
-      <Text style={styles.explanation}>Los favoritos se incorporarán en el paso 9. La orientación estará disponible en los pasos 12 y 13.</Text>
+      <FavoriteButton destinationId={destination.id} name={destination.name} showLabel />
+      <Text style={styles.explanation}>La orientación estará disponible en los pasos 12 y 13.</Text>
       {destination.source === 'custom' && <RouteButton href={{ pathname: '/destination/form', params: { id: destination.id } }} label="Editar destino" />}
       <RouteButton href={{ pathname: '/compass/[id]', params: { id: destination.id } }} label="Ver pantalla de Brújula (en desarrollo)" />
       <RouteButton href="/places" label="Volver a Lugares" dismissTo />
