@@ -244,19 +244,19 @@ Repetir estas comprobaciones en cada paso que cambie código; registrar resultad
 
 **Resultado esperado:** pantalla de Brújula y manejo de permisos/posición; sin acreditar sensores físicos aún.
 
-- [ ] Instalar expo-location con versión compatible mediante expo install.
-- [ ] Abrir Brújula desde Detalles con destino validado.
-- [ ] Mostrar destino y botón Iniciar orientación sin permiso al abrir la ruta.
-- [ ] Solicitar únicamente permiso foreground al tocar el botón.
-- [ ] Mostrar explicación de permiso y estados solicitando/obteniendo ubicación en español.
-- [ ] Obtener posición y precisión; validar coordenadas antes de usarlas.
-- [ ] Manejar permiso rechazado, sin posibilidad de volver a solicitarlo, servicios desactivados y error/timeout de posición.
-- [ ] Ofrecer reintento o instrucciones de ajustes cuando corresponda.
-- [ ] Evitar actualizaciones tardías después de salir y permitir cancelar/detener.
-- [ ] Probar estados con simulador/datos controlados y registrar sus límites.
-- [ ] No solicitar background ni incorporar mapas/geocodificación.
-- [ ] Reservar validación GPS/sensores del iPhone físico para el paso 13.
-- [ ] Completar la verificación común de entrega.
+- [x] Instalar expo-location con versión compatible mediante expo install.
+- [x] Abrir Brújula desde Detalles con destino validado.
+- [x] Mostrar destino y botón Iniciar orientación sin permiso al abrir la ruta.
+- [x] Solicitar únicamente permiso foreground al tocar el botón.
+- [x] Mostrar explicación de permiso y estados solicitando/obteniendo ubicación en español.
+- [x] Obtener posición y precisión; validar coordenadas antes de usarlas.
+- [x] Manejar permiso rechazado, sin posibilidad de volver a solicitarlo, servicios desactivados y error/timeout de posición.
+- [x] Ofrecer reintento o instrucciones de ajustes cuando corresponda.
+- [x] Evitar actualizaciones tardías después de salir y permitir cancelar/detener.
+- [x] Probar estados con simulador/datos controlados y registrar sus límites.
+- [x] No solicitar background ni incorporar mapas/geocodificación.
+- [x] Reservar validación GPS/sensores del iPhone físico para el paso 13.
+- [x] Completar la verificación común de entrega.
 
 ## Paso 13 — Brújula en el iPhone 14 Pro
 
@@ -631,3 +631,34 @@ Se marca el check restante de Flexbox en dos tamaños: **paso 2, 10/10 completo*
 **Defensa:** coordenadas → validación → distancia haversine y umbral de precisión → rumbo inicial respecto de norte verdadero → resta de heading verdadero → giro firmado para flecha. Null impide inventar dirección cercana o indefinida. La futura capa de sensores debe verificar calidad/disponibilidad antes de llamar estas funciones y proporcionar precisión GPS; aún no está conectada. La esfera terrestre es una aproximación apropiada para orientación académica, sin navegación vial ni precisión UWB.
 
 **Pendiente:** permiso/ubicación en paso 12, heading/flecha y prueba física iPhone 14 Pro en paso 13, aceptación final en paso 14. Entrega disponible para revisión.
+
+
+### 12 de octubre de 2026 — Paso 12: ubicación bajo demanda y auditoría
+
+**13/13 checks auditados y marcados**, con evidencia y límites identificados abajo. Usuario autorizó implementación, auditoría, marcado y commit/push. No se inició el paso 13. La checklist común global permanece como plantilla; la comprobación exitosa manual de este incremento fue del controlador con datos controlados, no del GPS/interfaz.
+
+**Archivos:** Brújula y texto/enlace desde Detalles, nuevo `src/features/compass/location.ts`, nuevo `scripts/test-location.cjs`, package.json/lock, app.json, README y esta lista. Dependencia única añadida: expo-location ~57.0.21 mediante `npx expo install expo-location` para SDK 57, incluida en Expo Go.
+
+| Check | Evidencia |
+| --- | --- |
+| Instalación compatible | expo install seleccionó SDK 57; expo-location satisface ~57.0.20 del manifiesto local. Check remoto no señaló esta dependencia |
+| Detalles → destino validado | resolver visible ya compartido; Obelisco → Brújula observado en Expo Go. Tests existentes rechazan IDs inválidos/ajenos/anónimos |
+| Destino e Iniciar, sin permiso al abrir | Pantalla mostró Orientación hacia Obelisco y botón sin prompt; controlador no hace llamadas al construirse (test) |
+| Únicamente foreground por acción | Adaptador solo get/requestForegroundPermissionsAsync; prompt apareció al tocar Iniciar. Sin background |
+| Explicación y estados españoles | Texto previo, requesting/locating, indicador y errores en pantalla; estados observados en ejecución controlada. Diálogo propio de Expo Go en inglés, limitación documentada |
+| Posición y precisión validadas | High solicitada, muestra precisión estimada; tests de éxito, rangos, NaN/Infinity, null/negativo y precisión inválida |
+| Rechazo/bloqueo/servicios/error/timeout | Denegación y bloqueo observados en UI; tests del controlador real cubren rechazo recuperable, servicios apagados, cuatro errores de API y timeout |
+| Reintento/ajustes | Texto indica ajustes para bloqueo/servicios; reintento UI mantuvo aviso y no volvió a pedir permiso bloqueado; test timeout seguido de éxito |
+| Salida/cancelar/detener | useFocusEffect invalida al blur/unmount; key por destino; Stop limpia timer/datos. Tests cancelación en las cuatro esperas, repetidos y rechazo tardío tras nuevo inicio |
+| Simulador/datos controlados y límites | Expo Go: navegación, ausencia de prompt inicial, rechazo, reintento, retorno. Node: flujo exitoso/stop inspeccionado; tests de estados y fallos. No se acredita posición exitosa visual ni GPS real |
+| Sin background/mapas/geocodificación | Config pública Android únicamente COARSE/FINE; código sin APIs background, mapas, geocoding ni listeners |
+| Reserva física paso 13 | Sin heading/flecha todavía; iPhone 14 Pro, iOS/Expo Go reales y GPS/sensores pendientes del paso 13 |
+| Verificación común | Reglas/alcance revisados; componentes funcionales/TypeScript/español, Flexbox compartido, loading/error, botones de 48 y roles accesibles. Tipos/lint/suites/config/diff revisados; error y retorno manual UI, éxito y stop manual controlado; defensa/documentación, entrega sin avanzar |
+
+**Comandos:** `npx expo install expo-location` exit 0; `npx tsc --noEmit`, `npm run lint`, `npm run test:location`, todas las suites previas (auth 18/18, catalog, destinations, favorites, deletion, orientation), `npx expo config --type public` y `git diff --check` exit 0. `npx expo install --check` exit 1 por cuatro patches existentes pendientes: @expo/ui 57.0.22→~57.0.23, expo 57.0.27→~57.0.28, expo-router 57.0.25→~57.0.26, expo-splash-screen 57.0.9→~57.0.10. No señaló expo-location. Se preservó alcance sin actualizar otras dependencias. La ejecución de suites se hizo después por separado porque ese check detuvo la cadena inicial.
+
+**Manual:** Device Hub, iPhone 18 Pro / iOS 27.0 simulado, cuenta B existente: Obelisco → Abrir Brújula → destino/Iniciar sin prompt → Iniciar → prompt nativo Expo Go → Don't Allow → mensaje «El permiso está bloqueado…» → Reintentar → mismo aviso → Volver a Detalles. No se alteraron cuentas/destinos/favoritos. El permiso de Expo Go quedó denegado en ese simulador. Evidencia por árbol accesible; después se reabrió Brújula y una captura visual confirmó texto y botones legibles sin recorte y estado inicial restablecido. No se atribuye GPS exitoso a esta prueba. Ejecución directa en Node del controlador real con posición ficticia (-34.603, -58.382), precisión 15 m: requesting → locating → ready con los tres valores → stop → idle. Errores/timeout/cancelación en suite controlada, no condiciones físicas provocadas.
+
+**Defensa:** acción explícita → permiso foreground → servicios → posición validada → estado local. Cada intento usa generación; cancelación/salida/timeout cambia la generación, por lo que un resultado antiguo no puede publicar ni pisar otro intento. Timeout de 20 segundos desde la fase de localización incluye comprobación de servicios. No hay timeout sobre el diálogo interactivo; puede cancelarse el intento de la app y salir. Las promesas nativas no son abortables: se limpian timer/estado y se ignora la respuesta, sin afirmar cancelación física. No se persiste ubicación ni se crean subscriptions. El texto de app.json no cambia el prompt del binario Expo Go.
+
+**Pendientes:** prueba exitosa de posición en pantalla y validación real GPS/heading en iPhone 14 Pro del paso 13; aceptación final completa en paso 14. No se acredita prueba física, flecha ni todos los 16 escenarios finales. Entrega disponible para revisión.
