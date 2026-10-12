@@ -40,7 +40,7 @@ La estructura se actualizará a medida que se implementen las features, sin crea
 
 ## Dependencias y decisiones
 
-El proyecto ya incluye Expo, React Native, TypeScript y Expo Router; este último permite conservar la navegación basada en rutas. Se añadieron `@react-native-async-storage/async-storage` 2.2.0 para cuentas/sesión local y `expo-crypto` ~57.0.4 para UUID, salt aleatorio y verificador SHA-256. Se instalaron con `npx expo install`. Ambas están incluidas en Expo Go según la documentación oficial de [AsyncStorage](https://docs.expo.dev/versions/latest/sdk/async-storage/) y [Crypto](https://docs.expo.dev/versions/latest/sdk/crypto/). `expo-location` ~57.0.21 se instaló con `npx expo install expo-location` en el paso 12 para permiso foreground y posición; también permite heading en el próximo incremento. Está incluido en Expo Go según la [documentación oficial](https://docs.expo.dev/versions/latest/sdk/location/).
+El proyecto ya incluye Expo, React Native, TypeScript y Expo Router; este último permite conservar la navegación basada en rutas. Se añadieron `@react-native-async-storage/async-storage` 2.2.0 para cuentas/sesión local y `expo-crypto` ~57.0.4 para UUID, salt aleatorio y verificador SHA-256. Se instalaron con `npx expo install`. Ambas están incluidas en Expo Go según la documentación oficial de [AsyncStorage](https://docs.expo.dev/versions/latest/sdk/async-storage/) y [Crypto](https://docs.expo.dev/versions/latest/sdk/crypto/). `expo-location` ~57.0.21 se instaló con `npx expo install expo-location` en el paso 12 para permiso foreground y posición; se usa además para heading y posición continua en el paso 13. Está incluido en Expo Go según la [documentación oficial](https://docs.expo.dev/versions/latest/sdk/location/).
 
 No se implementarán backend, mapas en línea ni sincronización. Las cuentas y datos pertenecerán a una instalación local y no se compartirán automáticamente entre dispositivos. No se almacenan contraseñas en texto plano: se guarda un verificador SHA-256 de salt + contraseña. Es una demostración educativa, no autenticación de producción ni una función de derivación lenta para proteger contraseñas reales; usar credenciales ficticias.
 
@@ -100,7 +100,7 @@ Ejecutar `npm run test:catalog` para contrastar exactamente IDs, nombres, coorde
 
 ## Detalles — paso 6
 
-En Lugares, tocar una fila abre Detalles con nombre, descripción, latitud, longitud y origen. Los destinos predefinidos indican «Solo lectura». Editar aparece únicamente para destinos propios; favoritos y eliminar están disponibles para los destinos propios. El enlace a Brújula aclara que está en desarrollo, lleva el ID real y muestra el nombre seleccionado; desde el paso 12 pide permiso foreground únicamente al tocar Iniciar orientación; el heading sigue pendiente del paso 13.
+En Lugares, tocar una fila abre Detalles con nombre, descripción, latitud, longitud y origen. Los destinos predefinidos indican «Solo lectura». Editar aparece únicamente para destinos propios; favoritos y eliminar están disponibles para los destinos propios. El enlace a Brújula lleva el ID real y muestra el nombre seleccionado; pide permiso foreground únicamente al tocar Iniciar orientación. Desde el paso 13 integra heading y flecha aproximada; la prueba física sigue pendiente.
 
 «Volver a Lugares» usa `dismissTo`: regresa a la lista existente o reemplaza la ruta si se abrió directamente, evitando duplicar Lugares en el historial. El Atrás del Stack también funciona. Un ID inválido, inexistente, múltiple o ajeno muestra el mismo aviso, sin revelar datos privados, y ofrece un retorno seguro.
 
@@ -168,3 +168,24 @@ Para defenderlo: `src/app/compass/[id].tsx` resuelve el destino, conecta las API
 Prueba manual del paso 12: Expo Go en iPhone 18 Pro/iOS 27.0 simulado, abrir Obelisco → Brújula sin prompt, iniciar → rechazar permiso, comprobar instrucciones de Ajustes, reintentar y volver a Detalles. El permiso de Expo Go quedó denegado en ese simulador. El camino exitoso/Detener se inspeccionó ejecutando el controlador real en Node con coordenadas ficticias; no se acredita posición exitosa en la interfaz ni GPS real. Tests cubren éxito, rechazo recuperable/bloqueado, servicios apagados, precisión inválida, errores, timeout/reintento y salida/cancelación durante cada espera. La prueba GPS y sensores del iPhone 14 Pro sigue en paso 13.
 
 `npx expo install --check` encontró actualizaciones patch pendientes de dependencias existentes (@expo/ui, expo, expo-router, expo-splash-screen); no señaló incompatibilidad de expo-location. Se conservaron sus versiones para limitar este incremento. Configuración pública, tipos, lint y todas las suites pasaron; ver auditoría en STEPBYSTEP.md.
+
+
+## Brújula y flecha — paso 13
+
+Detalles → Abrir Brújula → **Iniciar orientación**. Tras permiso foreground y posición validada, se suscribe al rumbo y a actualizaciones de ubicación. Sostener el teléfono plano, con su parte superior hacia adelante: la flecha gira según bearing al destino menos rumbo del teléfono. Solo se acepta norte verdadero y calidad media/alta (`accuracy` 2/3 según Expo); no se mezcla norte magnético con bearing geográfico. La precisión GPS determina el margen de cercanía: dentro de max(1 m, precisión) no se dibuja una dirección. Una posición inicial válida puede seguir usándose hasta la próxima actualización; no implica GPS continuo con precisión garantizada.
+
+Si el heading no es válido o tiene baja calidad, se oculta la flecha y se explica cómo calibrar/alejar imanes. Una lectura posterior válida recupera la orientación. Si no llegan eventos durante 20 segundos o falla una API, se detiene y permite reintentar. **Detener**, salir, cambiar de destino, desmontar o pasar a background retira listeners y limpia datos/timer. Un handle que llega después de salir se elimina de inmediato; callbacks antiguos no pueden modificar el nuevo intento. Volver del background exige Iniciar otra vez. El estado iOS inactive del diálogo de permiso no cancela la solicitud. No hay permiso background ni almacenamiento de ubicación.
+
+`src/features/compass/heading.ts` administra calidad/ciclo de vida y reutiliza el controlador location del paso 12. `src/app/compass/[id].tsx` conecta las APIs y dibuja flecha accesible (destino, grados y sentido de giro). `orientation.ts` conserva el cálculo puro. `npm run test:heading` prueba sensores ficticios con las funciones reales: calidad, giros, cercanía, actualización GPS, errores, timeout, stop repetido y carreras de handles/callbacks. Tipos, lint y todas las suites pasaron. Expo Go en el simulador permitió verificar pantalla inicial, permiso bloqueado, retry y vuelta a Detalles; **no acredita flecha/GPS/heading físicos**.
+
+**Prueba física omitida por indicación del usuario:** iPhone 14 Pro no disponible durante esta entrega. STEPBYSTEP marca 13 checks con evidencia e identifica 5 físicos pendientes. Registrar iOS/Expo Go reales y comprobar SDK 57 antes de acreditar esos checks. El simulador puede carecer de heading o suministrar posiciones simuladas; no reemplaza al iPhone. Interiores, metal, fundas magnéticas e imanes pueden alterar el rumbo: probar en espacio abierto. Es orientación aproximada, sin navegación vial, UWB ni precisión centimétrica.
+
+Cuando esté disponible el teléfono:
+
+1. Registrar iOS y Expo Go; ejecutar `npx expo start` y abrir el proyecto con QR en Expo Go, usando la misma red que el Mac.
+2. Ingresar con cuenta ficticia, abrir un destino conocido y Brújula. Abrir la ruta no debe pedir permiso. Iniciar y otorgar ubicación mientras se usa; observar posición y precisión.
+3. En entorno abierto, sostener plano y girar el teléfono en varias direcciones; contrastar la flecha con la ubicación conocida del destino. Comprobar mensaje de cercanía usando un destino propio con coordenadas próximas.
+4. Detener/iniciar varias veces, volver a Detalles, abrir otro destino y salir durante carga: verificar estado inicial y ausencia de actualizaciones tardías. Pasar a background y regresar: queda detenido.
+5. Rechazar permiso y comprobar explicación, retry y retorno a otras pantallas; restituirlo desde Ajustes cuando se necesite. Anotar resultados reales de GPS/heading; los fallos de sensores también tienen cobertura controlada identificada en tests.
+
+La asistencia de IA en este incremento incluyó implementación del controlador/screen, pruebas de ciclo de vida y calidad, auditoría y documentación; la verificación física requiere al usuario.

@@ -262,24 +262,27 @@ Repetir estas comprobaciones en cada paso que cambie código; registrar resultad
 
 **Resultado esperado:** demostración física de orientación y fallbacks.
 
+**Estado:** implementación auditada; 13/18 checks completados. Los 5 checks físicos se omiten por indicación del usuario (iPhone no disponible) y permanecen sin marcar. Los checks de ciclo de vida y fallbacks se acreditan con simulador/adaptador controlado, no sensores reales.
+
 - [ ] Registrar iPhone 14 Pro, versión iOS, versión Expo Go y SDK del proyecto.
 - [ ] Confirmar que el bundle abre en Expo Go del teléfono.
-- [ ] Suscribir heading únicamente con orientación activa.
-- [ ] Verificar disponibilidad/calidad de heading y elegir norte verdadero/magnético de forma coherente con bearing.
-- [ ] Calcular ángulo relativo y dibujar flecha accesible con explicación de orientación aproximada.
-- [ ] Mostrar calibración/no disponible si heading es inválido o de baja calidad.
-- [ ] Definir cercanía al destino tomando en cuenta precisión GPS.
-- [ ] Detener listeners al pulsar Detener, salir o desmontar, incluso con inicio asíncrono pendiente.
+- [x] Suscribir heading únicamente con orientación activa.
+- [x] Verificar disponibilidad/calidad de heading y elegir norte verdadero/magnético de forma coherente con bearing.
+- [x] Calcular ángulo relativo y dibujar flecha accesible con explicación de orientación aproximada.
+- [x] Mostrar calibración/no disponible si heading es inválido o de baja calidad.
+- [x] Definir cercanía al destino tomando en cuenta precisión GPS.
+- [x] Detener listeners al pulsar Detener, salir o desmontar, incluso con inicio asíncrono pendiente.
 - [ ] En el iPhone, iniciar, otorgar permiso foreground y comprobar ubicación/precisión.
 - [ ] Girar teléfono en distintas orientaciones y verificar respuesta continua de la flecha.
 - [ ] Contrastar orientación aproximada con un lugar conocido en un entorno abierto.
-- [ ] Probar rechazo de permiso y mantener el resto de la app utilizable.
-- [ ] Probar ubicación no disponible y heading inválido mediante condiciones reales o simulación controlada identificada.
-- [ ] Probar iniciar/detener repetidas veces y volver a Detalles sin listeners duplicados.
-- [ ] Verificar comportamiento al cambiar de destino y ante salida durante carga.
-- [ ] Documentar interferencia magnética/interiores y diferencias respecto del simulador.
-- [ ] No prometer navegación vial, UWB ni precisión centimétrica.
-- [ ] Completar la verificación común de entrega.
+- [x] Probar rechazo de permiso y mantener el resto de la app utilizable.
+- [x] Probar ubicación no disponible y heading inválido mediante condiciones reales o simulación controlada identificada.
+- [x] Probar iniciar/detener repetidas veces y volver a Detalles sin listeners duplicados.
+- [x] Verificar comportamiento al cambiar de destino y ante salida durante carga.
+- [x] Documentar interferencia magnética/interiores y diferencias respecto del simulador.
+- [x] No prometer navegación vial, UWB ni precisión centimétrica.
+- [x] Completar la verificación común de entrega.
+
 
 ## Paso 14 — Preparar la presentación
 
@@ -662,3 +665,35 @@ Se marca el check restante de Flexbox en dos tamaños: **paso 2, 10/10 completo*
 **Defensa:** acción explícita → permiso foreground → servicios → posición validada → estado local. Cada intento usa generación; cancelación/salida/timeout cambia la generación, por lo que un resultado antiguo no puede publicar ni pisar otro intento. Timeout de 20 segundos desde la fase de localización incluye comprobación de servicios. No hay timeout sobre el diálogo interactivo; puede cancelarse el intento de la app y salir. Las promesas nativas no son abortables: se limpian timer/estado y se ignora la respuesta, sin afirmar cancelación física. No se persiste ubicación ni se crean subscriptions. El texto de app.json no cambia el prompt del binario Expo Go.
 
 **Pendientes:** prueba exitosa de posición en pantalla y validación real GPS/heading en iPhone 14 Pro del paso 13; aceptación final completa en paso 14. No se acredita prueba física, flecha ni todos los 16 escenarios finales. Entrega disponible para revisión.
+
+
+### 12 de octubre de 2026 — Paso 13: heading, flecha y auditoría
+
+**Alcance:** completar orientación bajo demanda; usuario autorizó omitir la prueba física por no tener disponible el iPhone. No se inició el paso 14. **13/18 checks marcados**; 5 verificaciones físicas pendientes y expresamente sin marcar. La checklist común global sigue siendo plantilla.
+
+**Archivos:** `src/features/compass/heading.ts`, `src/app/compass/[id].tsx`, texto de Detalles, `scripts/test-heading.cjs`, script en package.json, README y STEPBYSTEP. Sin nuevas dependencias ni cambios en almacenamiento. SDK 57 / Expo instalado 57.0.27 / expo-location 57.0.21. Versiones reales de iOS/Expo Go del iPhone sin verificar.
+
+| Check | Evidencia / estado |
+| --- | --- |
+| Dispositivo/versiones reales y bundle en teléfono | Pendiente: iPhone 14 Pro confirmado previamente, no disponible; no se inventan versiones ni ejecución física |
+| Heading solo activo | El controlador no llama APIs al construirse; tras permiso/posición inicia watchHeadingAsync y watchPositionAsync; test sin llamadas previas |
+| Calidad y norte coherente | Solo trueHeading finito en [0,360) y accuracy 2/3. Norte magnético nunca sustituye al verdadero. Matriz de valores inválidos/calidad en test |
+| Ángulo/flecha accesible | Funciones puras del paso 11 conectadas a posición/heading; flecha con rotación firmada y etiqueta con destino/grados/sentido. Giros cardinales controlados; flecha física/VoiceOver pendientes |
+| Calibración/no disponible | Lecturas inválidas/baja calidad retiran flecha y explican calibración/interferencia. Puede recuperar al recibir calidad válida. Timeout de 20 s sin eventos limpia listeners y ofrece reintento |
+| Cercanía/precisión | calculateBearing usa max(1 m, precisión GPS), devuelve null y UI oculta flecha con explicación. Test de posición actualizada al destino |
+| Stop/salida/desmontaje/inicio pendiente | Generación invalida callbacks. Handles que resuelven tarde se eliminan; useFocusEffect, key por destino y cleanup cubren salida/cambio; AppState background detiene. Inactive no cancela diálogo iOS |
+| Permiso/GPS físicos y giros/contraste abierto | Tres checks pendientes por omisión física autorizada; éxito matemático/controlador no acredita sensores |
+| Rechazo y app utilizable | Expo Go en iPhone 18 Pro/iOS 27.0 simulado: permiso previamente bloqueado → explicación → reintento → Detalles → Brújula idle; sin bloqueo de otras pantallas |
+| GPS no disponible/heading inválido | Simulación controlada identificada: servicios apagados, error de ubicación/heading, valores inválidos, silencio/timeout; tests de location/heading |
+| Repetidos/sin duplicados | Test tres ciclos start/stop, doble start bloqueado, callbacks antiguos ignorados, remove de ambos listeners; retorno UI manual. No se acredita repetición física |
+| Cambio/salida durante carga | Tests cancelación en permiso/posición/ambos watch pendientes; nuevo intento antes de handle viejo. Key por ID y limpieza al blur revisadas. No cambio físico |
+| Interferencia/simulador/límites | README e interfaz explican interiores, imanes, sostener plano y diferencias de simulador; sin promesas de rutas/UWB/centímetros |
+| Verificación común | Reglas y diff revisados; TS/componentes funcionales/español/loading/error, Flexbox/ScrollView, botones ≥48 y flecha accesible. Tipos/lint/suites/diff ejecutados; éxito/stop controlados y error/retorno manual en UI. Defensa/documentación y entrega para revisión |
+
+**Comandos ejecutados:** `npx tsc --noEmit`, `npm run lint`, `npm run test:heading`, todas las suites anteriores (auth 18/18, catalog, destinations, favorites, deletion, orientation, location), `git diff --check`: exit 0. Sin cambios de dependencias; compatibilidad de las APIs contrastada con los tipos instalados y [documentación oficial de Expo Location](https://docs.expo.dev/versions/latest/sdk/location/), incluida en Expo Go.
+
+**Manual:** Device Hub / iPhone 18 Pro, iOS 27.0 simulado, Metro ya activo conservado. Brújula Obelisco actualizada automáticamente sin pedir permiso al abrir. Iniciar → permiso bloqueado en español → Reintentar → mismo aviso → Volver a Detalles → Abrir Brújula → idle/Iniciar. Captura visual del estado inicial: textos y botones legibles sin recorte. No se habilitó Localización ni se atribuye GPS/heading/flecha exitosa al simulador. Éxito, giros y stop se verificaron en Node con el controlador real y sensores ficticios del adaptador; errores y carreras cubiertos por test.
+
+**Defensa:** pantalla resuelve destino visible → start → controlador location valida permiso/posición → controlador heading administra listeners/calidad → bearing verdadero y ángulo relativo → flecha. Un token por intento impide publicar callbacks antiguos y obliga a retirar cualquier handle tardío; detener limpia timer, listeners y datos en memoria. Foreground solamente, sin persistir ubicación ni heading. Una lectura mala oculta la flecha; un fallo de API o ausencia de eventos detiene y permite retry.
+
+**Pendiente:** cinco checks físicos, inspección visual de flecha con sensores válidos y uso real de VoiceOver; protocolo reproducible en README. El paso 13 no queda acreditado como demostración física completa. Aceptación final y presentación permanecen en paso 14.

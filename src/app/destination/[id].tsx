@@ -50,7 +50,7 @@ export default function DestinationDetailsScreen() {
         {pending ? <ActivityIndicator color={NavigationColors.onPrimary} /> : <Text style={styles.deleteText}>Eliminar destino</Text>}
       </Pressable>}
       <FavoriteButton destinationId={destination.id} name={destination.name} showLabel />
-      <Text style={styles.explanation}>Podés obtener tu ubicación en Brújula. La flecha de orientación se incorporará en el paso 13.</Text>
+      <Text style={styles.explanation}>Brújula usa ubicación y rumbo del teléfono para mostrar una dirección aproximada hacia este destino.</Text>
       {destination.source === 'custom' && <RouteButton href={{ pathname: '/destination/form', params: { id: destination.id } }} label="Editar destino" />}
       <RouteButton href={{ pathname: '/compass/[id]', params: { id: destination.id } }} label="Abrir Brújula" />
       <RouteButton href="/places" label="Volver a Lugares" dismissTo />
