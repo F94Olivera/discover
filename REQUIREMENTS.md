@@ -1,6 +1,6 @@
 # REQUIREMENTS.md — Integrative Final Project: Tourism App
 
-> **Status:** Specification aligned with the user-confirmed assignment and product decisions; physical-device verification remains pending.
+> **Status:** Specification aligned with the user-confirmed assignment and product decisions; physical step-13 verification was reported by the user; the full final manual acceptance run remains pending.
 > **Sources:** Assignment/rubric coverage has already been checked and confirmed by the user; no further original-assignment review is required. Formal assignment for *Mobile Application Development* and additional requirements communicated by the instructor: "3 screens + login and sign-up + favorites + a native phone feature."
 > **Goal:** Meet all assessable requirements without introducing a backend or unnecessary features.
 
@@ -139,7 +139,7 @@ Backend, endpoints, remote database, server-side authentication, cross-device sy
 - **S-04 — Privacy:** custom destinations and favorites are private to the local account that created them.
 - **S-05 — Forms:** manually entered coordinates; Use My Location is optional and deferred.
 - **S-06 — Screens:** confirmed minimum of access, Places/favorites and dedicated Compass. Details/Form support the required CRUD and navigation.
-- **S-07 — Platforms:** iOS is the preferred demonstration platform because the user has a Mac and no Android test device. The device is confirmed as iPhone 14 Pro; installed iOS/Expo Go versions remain to be verified and physical sensors will be tested at step 13. An iOS simulator alone cannot complete compass acceptance.
+- **S-07 — Platforms:** iOS is the preferred demonstration platform because the user has a Mac and no Android test device. The device is confirmed as iPhone 14 Pro; the user reported successful step-13 physical tests on iOS 26.7.1, Expo Go 57.0.9 and SDK 57.0.0. A complete final manual acceptance run after the patch alignment remains pending. An iOS simulator alone cannot complete compass acceptance.
 - **S-08 — Dates:** ignore the stale November 2025 assignment dates at the user's instruction. Do not use them to plan delivery; no replacement date is required to start.
 - **S-09 — Local security:** no plaintext passwords. A locally salted/hashed verifier is an educational demonstration only, without claims of protection against device-level attacks.
 - **S-10 — Language:** Spanish UI and README; English code/types/function names and AGENTS.md, FLOWS.md, REQUIREMENTS.md. Initial scope excludes Profile and English/Spanish i18n; multilingual support can be reconsidered after completing the core assignment.

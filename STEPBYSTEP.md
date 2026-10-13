@@ -66,7 +66,7 @@ Repetir estas comprobaciones en cada paso que cambie código; registrar resultad
 - [x] Generar/cargar el bundle iOS y comprobar errores de resolución o compilación.
 - [x] Abrir la plantilla en Expo Go del simulador si existe un entorno disponible.
 - [x] Verificar visualmente las pantallas de ejemplo y el cambio entre pestañas si se logra abrir.
-- [ ] Abrir en Expo Go del iPhone mediante QR/enlace cuando el usuario esté disponible; confirmar carga y navegación básica.
+- [x] Abrir en Expo Go del iPhone mediante QR/enlace cuando el usuario esté disponible; confirmar carga y navegación básica. Confirmado por el usuario en la verificación física del paso 13.
 - [x] Registrar exactamente qué entorno se probó y qué prueba quedó pendiente.
 - [x] Dejar instrucciones para repetir el arranque y detener Metro cuando ya no sea necesario.
 - [x] No solicitar permiso de ubicación ni activar sensores durante este paso.
@@ -262,19 +262,19 @@ Repetir estas comprobaciones en cada paso que cambie código; registrar resultad
 
 **Resultado esperado:** demostración física de orientación y fallbacks.
 
-**Estado:** implementación auditada; 13/18 checks completados. Los 5 checks físicos se omiten por indicación del usuario (iPhone no disponible) y permanecen sin marcar. Los checks de ciclo de vida y fallbacks se acreditan con simulador/adaptador controlado, no sensores reales.
+**Estado:** 18/18 checks completados. El usuario confirmó haber realizado todas las pruebas de la guía en su iPhone 14 Pro físico. La evidencia física es su reporte manual; la auditoría técnica anterior conserva sus pruebas de simulador/adaptador controlado. El usuario comunicó en el paso 14: iOS 26.7.1, Expo Go 57.0.9 y SDK 57.0.0. Ver registro de verificación física al final.
 
-- [ ] Registrar iPhone 14 Pro, versión iOS, versión Expo Go y SDK del proyecto.
-- [ ] Confirmar que el bundle abre en Expo Go del teléfono.
+- [x] Registrar iPhone 14 Pro, versión iOS, versión Expo Go y SDK del proyecto. Reporte del usuario: iOS 26.7.1, Expo Go 57.0.9, SDK 57.0.0.
+- [x] Confirmar que el bundle abre en Expo Go del teléfono.
 - [x] Suscribir heading únicamente con orientación activa.
 - [x] Verificar disponibilidad/calidad de heading y elegir norte verdadero/magnético de forma coherente con bearing.
 - [x] Calcular ángulo relativo y dibujar flecha accesible con explicación de orientación aproximada.
 - [x] Mostrar calibración/no disponible si heading es inválido o de baja calidad.
 - [x] Definir cercanía al destino tomando en cuenta precisión GPS.
 - [x] Detener listeners al pulsar Detener, salir o desmontar, incluso con inicio asíncrono pendiente.
-- [ ] En el iPhone, iniciar, otorgar permiso foreground y comprobar ubicación/precisión.
-- [ ] Girar teléfono en distintas orientaciones y verificar respuesta continua de la flecha.
-- [ ] Contrastar orientación aproximada con un lugar conocido en un entorno abierto.
+- [x] En el iPhone, iniciar, otorgar permiso foreground y comprobar ubicación/precisión.
+- [x] Girar teléfono en distintas orientaciones y verificar respuesta continua de la flecha.
+- [x] Contrastar orientación aproximada con un lugar conocido en un entorno abierto.
 - [x] Probar rechazo de permiso y mantener el resto de la app utilizable.
 - [x] Probar ubicación no disponible y heading inválido mediante condiciones reales o simulación controlada identificada.
 - [x] Probar iniciar/detener repetidas veces y volver a Detalles sin listeners duplicados.
@@ -288,23 +288,26 @@ Repetir estas comprobaciones en cada paso que cambie código; registrar resultad
 
 **Resultado esperado:** app verificable, documentación fiel y defensa preparada.
 
+**Estado:** auditoría técnica y documentación listas; **15/17 checks acreditados**. Los dos checks de recorrido manual completo permanecen pendientes por pérdida de control de Device Hub. Ver [ACEPTACION.md](./ACEPTACION.md) para los 16 escenarios y [DEFENSA.md](./DEFENSA.md) para el guion. No se acredita aceptación manual completa.
+
 - [ ] Ejecutar los 16 escenarios de REQUIREMENTS y registrar resultado/evidencia de cada uno.
-- [ ] Distinguir escenarios físicos, simulados y pendientes; no marcar pruebas no realizadas.
-- [ ] Ejecutar TypeScript/lint y las pruebas relevantes finales.
-- [ ] Comprobar arranque desde instalación documentada y reinicio con datos existentes.
-- [ ] Revisar separación por usuario, permisos de dominio e inmutabilidad del catálogo.
-- [ ] Revisar loading/error/retry, cancelaciones y fallos de persistencia.
-- [ ] Revisar UI española, accesibilidad, teclado, áreas seguras y tamaños de pantalla.
-- [ ] Actualizar README con estado real, instalación, comandos y estructura final.
-- [ ] Documentar dependencias efectivamente usadas y justificar cada incorporación.
-- [ ] Documentar cuentas locales sin sincronización y autenticación educativa.
-- [ ] Actualizar declaración de uso de IA con asistencia realmente utilizada.
-- [ ] Documentar dispositivo físico, limitaciones de brújula y resultados reales.
-- [ ] Preparar credenciales ficticias de A/B y un destino propio de prueba.
+- [x] Distinguir escenarios físicos, simulados y pendientes; no marcar pruebas no realizadas.
+- [x] Ejecutar TypeScript/lint y las pruebas relevantes finales.
+- [x] Comprobar arranque desde instalación documentada y reinicio con datos existentes.
+- [x] Revisar separación por usuario, permisos de dominio e inmutabilidad del catálogo.
+- [x] Revisar loading/error/retry, cancelaciones y fallos de persistencia.
+- [x] Revisar UI española, accesibilidad, teclado, áreas seguras y tamaños de pantalla.
+- [x] Actualizar README con estado real, instalación, comandos y estructura final.
+- [x] Documentar dependencias efectivamente usadas y justificar cada incorporación.
+- [x] Documentar cuentas locales sin sincronización y autenticación educativa.
+- [x] Actualizar declaración de uso de IA con asistencia realmente utilizada.
+- [x] Documentar dispositivo físico, limitaciones de brújula y resultados reales.
+- [x] Preparar credenciales ficticias de A/B y un destino propio de prueba.
 - [ ] Ensayar registro/login, catálogo, CRUD, favoritos, cambio de usuario, reinicio y brújula.
-- [ ] Identificar archivos de navegación, FlatList, validación, dominio, estado, storage y cálculos.
-- [ ] Explicar hooks y dependencias de efectos, cleanup de sensores y aislamiento por usuario.
-- [ ] Revisar cambios finales y pendientes contra requisitos, sin agregar features nuevas.
+- [x] Identificar archivos de navegación, FlatList, validación, dominio, estado, storage y cálculos.
+- [x] Explicar hooks y dependencias de efectos, cleanup de sensores y aislamiento por usuario.
+- [x] Revisar cambios finales y pendientes contra requisitos, sin agregar features nuevas.
+
 
 ## Registro de avances
 
@@ -697,3 +700,29 @@ Se marca el check restante de Flexbox en dos tamaños: **paso 2, 10/10 completo*
 **Defensa:** pantalla resuelve destino visible → start → controlador location valida permiso/posición → controlador heading administra listeners/calidad → bearing verdadero y ángulo relativo → flecha. Un token por intento impide publicar callbacks antiguos y obliga a retirar cualquier handle tardío; detener limpia timer, listeners y datos en memoria. Foreground solamente, sin persistir ubicación ni heading. Una lectura mala oculta la flecha; un fallo de API o ausencia de eventos detiene y permite retry.
 
 **Pendiente:** cinco checks físicos, inspección visual de flecha con sensores válidos y uso real de VoiceOver; protocolo reproducible en README. El paso 13 no queda acreditado como demostración física completa. Aceptación final y presentación permanecen en paso 14.
+
+### 12 de octubre de 2026 — Paso 13: confirmación de pruebas físicas
+
+**Evidencia:** el usuario informó: «pude correr en mi iphone 14 pro fisico todas las pruebas que describiste aca» y solicitó marcar su realización. La confirmación corresponde a la guía paso a paso de esta conversación; no es una observación directa del agente. Este registro actualiza los pendientes físicos de las entradas históricas anteriores, que se conservan como evidencia de cada entrega.
+
+**Resultado:** paso 13, **18/18 checks marcados**. Se acredita por reporte del usuario la apertura del proyecto en Expo Go del iPhone 14 Pro, el recorrido de registro/navegación, el inicio con permiso foreground y posición/precisión, la respuesta de la flecha a giros y el contraste aproximado con un destino conocido en entorno abierto. También confirmó las pruebas de detener/reiniciar, volver a Detalles y reabrir Brújula, pasar a la pantalla de inicio y regresar con orientación detenida, rechazar permiso manteniendo el resto de la app utilizable y restituirlo para reintentar. La apertura física también resuelve la comprobación de carga/navegación pendiente del paso 1.
+
+**Entorno:** iPhone 14 Pro físico; SDK del proyecto 57. El usuario confirmó la realización de la guía, que incluía consultar/anotar versiones, pero no comunicó los números de iOS y Expo Go; quedan por transcribir a este documento. No se atribuyen al teléfono las versiones del simulador.
+
+**Límites:** no se informó una prueba de VoiceOver, fallos físicos de almacenamiento ni inspección instrumental de listeners. La limpieza interna, carreras asíncronas y estados de sensores inválidos mantienen la evidencia técnica controlada registrada anteriormente. Esta confirmación no acredita automáticamente los 16 escenarios de aceptación ni inicia el paso 14.
+
+**Cambio:** solo documentación en STEPBYSTEP; sin cambios de código o dependencias. No se repitieron TypeScript/lint/suites por tratarse de un registro de pruebas manuales realizadas por el usuario.
+
+### 12 de octubre de 2026 — Paso 14: presentación y auditoría final
+
+**Alcance:** documentación final, revisión de requisitos, suites y ensayo; sin nuevas features. Se preservó la confirmación física del paso 13 que ya estaba modificada antes de este trabajo. El usuario comunicó las versiones del iPhone 14 Pro: **iOS 26.7.1, cliente Expo Go 57.0.9, SDK 57.0.0**. Este dato completa el registro físico sin alterar la evidencia histórica.
+
+**Archivos:** README reescrito para describir la app final; DEFENSA con cuentas ficticias/guion/explicación de hooks y archivos; ACEPTACION con los 16 escenarios y métodos/límites; STEPBYSTEP con auditoría y checks; REQUIREMENTS/FLOWS/AGENTS actualizan el dato físico confirmado. package.json/package-lock alinean cuatro patches de SDK 57 con `npx expo install --fix`: @expo/ui ~57.0.23, expo ~57.0.28, expo-router ~57.0.26 y expo-splash-screen ~57.0.10. No se añadieron dependencias ni se modificaron las funciones de dominio/pantallas.
+
+**Comandos:** npm ci exit 0; types/lint y ocho suites exit 0. Expo install check y Doctor inicialmente detectaron los cuatro patches; después de fix, check exit 0 y Doctor 21/21 exit 0. Types/lint repetidos tras patches exit 0. La instalación reportó 29 vulnerabilidades transitivas; no se ejecutó audit fix forzado ni se cambió SDK. Validación final posterior a patches: las ocho suites volvieron a pasar (auth 18/18) y git diff --check exit 0.
+
+**Arranque y manual:** se reinstaló con lockfile y se reinició Metro con caché limpia conservando AsyncStorage. Expo Go abrió Lugares restaurando sesión B 14/20 lugares. El ensayo creó Defensa A, entró automáticamente, verificó 20 seeds, Teatro favorito rojo/primero y retorno al desmarcar, validaciones vacías y abc/181 con inputs conservados, alta con 21 lugares, Detalles, cancelación de edición y edición guardada. Destino defensa A editado quedó favorito; cancelar baja conservó ambos. No se acredita confirmación de baja final ni reinicio de datos nuevos: se perdió control de Device Hub con noWindowsAvailable/IDs inválidos/árbol sin controles. Se intentó recuperar selección y actualizar estado/captura; Cmd+R no acreditó Reload. Se preservaron las cuentas/destino de prueba.
+
+**Auditoría:** **15/17 checks marcados**. La matriz registra evidencia de cada uno de los 16 escenarios: suites finales, UI final parcial, UI histórica y reporte físico. Los checks «Ejecutar los 16 escenarios» y «Ensayar registro/login…» quedan sin marcar porque falta un recorrido manual final completo. No se confunden tests de funciones con UI ni sensores simulados con físicos. Los otros 15 checks están respaldados por comandos, revisión de archivos/recuperación/aislamiento/accesibilidad, documentación y preparación de defensa. La checklist común global permanece plantilla.
+
+**Pendientes concretos:** repetir guion DEFENSA tras los patches: reinicio con alta/edición/favoritos nuevos, confirmar baja descartable, A/B/A, login inválido, registro inválido, enlaces ajenos/protegidos y otro tamaño; repetir brújula física final. VoiceOver real y errores de storage visuales no acreditados. Las suites controladas ya verifican huérfanas/JSON/fallos de escritura y recuperación sin corromper datos reales. No se afirma aceptación manual total ni se marcan esos dos checks.
