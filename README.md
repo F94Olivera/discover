@@ -6,7 +6,7 @@ Aplicación académica con Expo, React Native y TypeScript para Expo Go. Incluye
 
 Las funciones de los pasos 1–13 están implementadas. El usuario confirmó las pruebas físicas del paso 13 en **iPhone 14 Pro, iOS 26.7.1, Expo Go 57.0.9, SDK 57.0.0**. Esa evidencia es su reporte, no una observación directa del agente. El proyecto usa SDK 57; la revisión final alineó cuatro parches recomendados por Expo, sin cambiar de SDK.
 
-El paso 14 prepara documentación y defensa, ejecuta las ocho suites y audita los requisitos. La [matriz de aceptación](./ACEPTACION.md) distingue pruebas finales, evidencia histórica del simulador, reporte físico y pendientes. **No se acredita un recorrido manual final completo de los 16 escenarios**: Device Hub dejó de aceptar acciones durante el ensayo final. Tampoco se acredita VoiceOver real ni fallos físicos de AsyncStorage. Consultar [STEPBYSTEP.md](./STEPBYSTEP.md) para comandos y resultados.
+El paso 14 está cerrado con **17/17 checks marcados por confirmación del usuario**. La [matriz de aceptación](./ACEPTACION.md) distingue recorrido final hasta la prueba 13 reportado por el usuario, pruebas físicas previas, suites y revisión técnica. El usuario aceptó cerrar sin repetir la prueba 16; no se acredita VoiceOver real, una nueva revisión de otro tamaño ni fallos físicos de AsyncStorage. Consultar [STEPBYSTEP.md](./STEPBYSTEP.md) para evidencia y límites.
 
 ## Instalación y arranque
 
@@ -91,7 +91,7 @@ Se acepta solo norte verdadero válido y calidad media/alta. Bearing usa coorden
 
 Detener, salir, desmontar, cambiar destino o entrar en background retira listeners y timers. Volver exige iniciar otra vez. Tokens por intento ignoran callbacks viejos y eliminan handles tardíos. Las promesas puntuales no son físicamente abortables: se ignora su resultado después de cancelar. No se pide background ni se persiste ubicación.
 
-El iPhone físico fue probado según reporte del usuario; el simulador puede carecer de brújula o dar coordenadas simuladas. Interiores, metal, fundas magnéticas e imanes afectan el rumbo. Es orientación aproximada, sin rutas viales, UWB ni precisión centimétrica. Después de los parches finales queda pendiente repetir el recorrido completo en Expo Go del teléfono.
+El iPhone físico fue probado según reporte del usuario; el simulador puede carecer de brújula o dar coordenadas simuladas. Interiores, metal, fundas magnéticas e imanes afectan el rumbo. Es orientación aproximada, sin rutas viales, UWB ni precisión centimétrica. El usuario reportó el recorrido funcional final y aceptó conservar la evidencia física previa de brújula/permisos, sin repetirla tras los patches.
 
 ## Ensayo de presentación y hooks
 

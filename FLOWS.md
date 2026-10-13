@@ -139,4 +139,4 @@ The demonstration targets iOS and requires a physical iPhone for heading validat
 
 ## 8. Remaining verification
 
-Assignment coverage, CABA catalog, minimum screens and Spanish README are confirmed. Ignore stale 2025 assignment dates. The device is confirmed as iPhone 14 Pro; the user reported successful step-13 physical tests on iOS 26.7.1, Expo Go 57.0.9 and SDK 57.0.0 (S-07). The final manual acceptance run after patch alignment remains pending; see ACEPTACION.md. See REQUIREMENTS.md Section 8 for the expanded acceptance checklist.
+Assignment coverage, CABA catalog, minimum screens and Spanish README are confirmed. Ignore stale 2025 assignment dates. The device is confirmed as iPhone 14 Pro; the user reported successful step-13 physical tests on iOS 26.7.1, Expo Go 57.0.9 and SDK 57.0.0 (S-07). Step 14 was closed by user confirmation with the final functional walkthrough, prior physical evidence and controlled checks; see ACEPTACION.md for evidence limits. See REQUIREMENTS.md Section 8 for the expanded acceptance checklist.

@@ -42,4 +42,4 @@ Brújula: la pantalla resuelve un destino visible, conserva controlador con `use
 - **¿Qué pasa si falla una escritura?** Se informa error y se conserva estado confirmado; reintento/restauración consulta lo persistido. Registro parcial y baja tienen recuperación explícita.
 - **¿Es GPS suficiente?** GPS obtiene posición; heading da orientación del teléfono. Son necesarios ambos y norte coherente para el ángulo relativo.
 - **¿Por qué un iPhone físico?** El simulador no acredita sensor real. El usuario confirmó el paso 13 en iPhone 14 Pro/iOS 26.7.1/Expo Go 57.0.9.
-- **¿Está todo validado manualmente al final?** No. Consultar ACEPTACION: se ejecutaron suites y parte del recorrido final; la herramienta perdió control de Device Hub. Falta repetir el guion completo tras los parches y VoiceOver real.
+- **¿Cómo se cerró la aceptación?** El usuario reportó el recorrido final hasta la prueba 13 y confirmó brújula/permisos físicos previos. Aceptó cerrar el paso 14 con evidencia combinada de UI, suites y revisión. La prueba 16 no se acredita como nueva ejecución; VoiceOver y otras variantes manuales mantienen los límites detallados en ACEPTACION.

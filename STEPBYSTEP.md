@@ -288,9 +288,9 @@ Repetir estas comprobaciones en cada paso que cambie código; registrar resultad
 
 **Resultado esperado:** app verificable, documentación fiel y defensa preparada.
 
-**Estado:** auditoría técnica y documentación listas; **15/17 checks acreditados**. Los dos checks de recorrido manual completo permanecen pendientes por pérdida de control de Device Hub. Ver [ACEPTACION.md](./ACEPTACION.md) para los 16 escenarios y [DEFENSA.md](./DEFENSA.md) para el guion. No se acredita aceptación manual completa.
+**Estado:** cerrado por confirmación del usuario; **17/17 checks marcados**. El usuario informó haber completado las pruebas 1–13 de la guía final y confirmó las pruebas físicas previas de brújula y permisos. Aceptó cerrar con la cobertura técnica/histórica de accesibilidad y tamaños, sin acreditar una nueva ejecución de la prueba 16 ni VoiceOver. Ver [ACEPTACION.md](./ACEPTACION.md).
 
-- [ ] Ejecutar los 16 escenarios de REQUIREMENTS y registrar resultado/evidencia de cada uno.
+- [x] Ejecutar los 16 escenarios de REQUIREMENTS y registrar resultado/evidencia de cada uno.
 - [x] Distinguir escenarios físicos, simulados y pendientes; no marcar pruebas no realizadas.
 - [x] Ejecutar TypeScript/lint y las pruebas relevantes finales.
 - [x] Comprobar arranque desde instalación documentada y reinicio con datos existentes.
@@ -303,7 +303,7 @@ Repetir estas comprobaciones en cada paso que cambie código; registrar resultad
 - [x] Actualizar declaración de uso de IA con asistencia realmente utilizada.
 - [x] Documentar dispositivo físico, limitaciones de brújula y resultados reales.
 - [x] Preparar credenciales ficticias de A/B y un destino propio de prueba.
-- [ ] Ensayar registro/login, catálogo, CRUD, favoritos, cambio de usuario, reinicio y brújula.
+- [x] Ensayar registro/login, catálogo, CRUD, favoritos, cambio de usuario, reinicio y brújula.
 - [x] Identificar archivos de navegación, FlatList, validación, dominio, estado, storage y cálculos.
 - [x] Explicar hooks y dependencias de efectos, cleanup de sensores y aislamiento por usuario.
 - [x] Revisar cambios finales y pendientes contra requisitos, sin agregar features nuevas.
@@ -726,3 +726,11 @@ Se marca el check restante de Flexbox en dos tamaños: **paso 2, 10/10 completo*
 **Auditoría:** **15/17 checks marcados**. La matriz registra evidencia de cada uno de los 16 escenarios: suites finales, UI final parcial, UI histórica y reporte físico. Los checks «Ejecutar los 16 escenarios» y «Ensayar registro/login…» quedan sin marcar porque falta un recorrido manual final completo. No se confunden tests de funciones con UI ni sensores simulados con físicos. Los otros 15 checks están respaldados por comandos, revisión de archivos/recuperación/aislamiento/accesibilidad, documentación y preparación de defensa. La checklist común global permanece plantilla.
 
 **Pendientes concretos:** repetir guion DEFENSA tras los patches: reinicio con alta/edición/favoritos nuevos, confirmar baja descartable, A/B/A, login inválido, registro inválido, enlaces ajenos/protegidos y otro tamaño; repetir brújula física final. VoiceOver real y errores de storage visuales no acreditados. Las suites controladas ya verifican huérfanas/JSON/fallos de escritura y recuperación sin corromper datos reales. No se afirma aceptación manual total ni se marcan esos dos checks.
+
+### 12 de octubre de 2026 — Paso 14: cierre confirmado por el usuario
+
+**Evidencia:** el usuario informó que llegó hasta la prueba 13 de la guía final y recordó haber realizado manualmente las pruebas físicas de brújula y rechazo de permisos en una entrega anterior. Tras explicar la utilidad de revisar teclado/otro tamaño y la opción de omitir esa repetición conservando los límites, solicitó «listo, marca todo como hecho».
+
+**Resultado:** **17/17 checks del paso 14 marcados**, cierre autorizado con evidencia combinada: recorrido final 1–13 reportado por el usuario, brújula/permisos físicos previos, pruebas controladas finales y revisión/historial de layouts. El cierre no afirma una nueva ejecución manual de la prueba 16, VoiceOver, enlaces directos ajenos/protegidos ni errores físicos de storage. Esas variantes conservan su cobertura técnica/histórica y los límites registrados. La checklist común global sigue siendo plantilla, no un incremento pendiente.
+
+**Archivos:** STEPBYSTEP, ACEPTACION, README, DEFENSA y estado de REQUIREMENTS/FLOWS/AGENTS. Solo documentación; no cambios de app/dependencias ni repetición de suites. Se verificó git diff --check antes de commit/push. Se conservan registros anteriores como historial; esta entrada actualiza su estado de pendientes.

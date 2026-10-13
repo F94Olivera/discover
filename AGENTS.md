@@ -154,7 +154,7 @@ Invariants:
 - S-02: successful registration saves account/session and automatically opens Places.
 - S-06: minimum functional areas are access, Places with integrated favorites, and dedicated Compass; Details/Form are supporting screens. No separate Favorites tab is needed.
 - Favorite hearts persist before confirmed visual changes. Sort favorites first, preserving base order within each group; removing a favorite restores relative position. Base order is PLACES.md seed order followed by custom creation order.
-- S-07: iOS is preferred. The device is confirmed as iPhone 14 Pro; the user reported successful physical step-13 tests on iOS 26.7.1, Expo Go 57.0.9 and SDK 57.0.0. Repeat the final acceptance run after patch alignment; simulator checks cannot complete compass acceptance.
+- S-07: iOS is preferred. The device is confirmed as iPhone 14 Pro; the user reported successful physical step-13 tests on iOS 26.7.1, Expo Go 57.0.9 and SDK 57.0.0. Step 14 was closed by user confirmation with combined evidence and explicit limits in ACEPTACION.md; simulator checks cannot complete compass acceptance.
 - S-08: ignore obsolete 2025 assignment dates at the user's instruction; do not require replacement dates to begin.
 - S-10: Spanish UI and README; English code and these three specification documents. No Profile/i18n in initial scope.
 - Define recoverable behavior for invalid stored data and partial multi-key writes before implementing persistence actions; no silent reset or false success.

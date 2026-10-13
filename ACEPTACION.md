@@ -2,9 +2,9 @@
 
 Fecha: 12 de octubre de 2026. Referencia: REQUIREMENTS, sección 8. No se añadieron funciones. La evidencia histórica detallada está en STEPBYSTEP; se conserva sin convertirla en una ejecución nueva.
 
-**Métodos:** UI final = Expo Go, Device Hub/iPhone 18 Pro simulado, iOS 27.0; controlado = suites Node con funciones reales y adaptadores ficticios; físico = reporte del usuario sobre iPhone 14 Pro, iOS 26.7.1, Expo Go 57.0.9, SDK 57.0.0. Ningún adaptador ni simulador acredita sensores físicos. No se informa una ejecución manual completa final de los 16 escenarios.
+**Métodos:** UI final = Expo Go, Device Hub/iPhone 18 Pro simulado, iOS 27.0; controlado = suites Node con funciones reales y adaptadores ficticios; físico = reporte del usuario sobre iPhone 14 Pro, iOS 26.7.1, Expo Go 57.0.9, SDK 57.0.0. Ningún adaptador ni simulador acredita sensores físicos. El usuario reportó el recorrido final hasta la prueba 13 de la guía y confirmó brújula/permisos físicos previos. Solicitó cerrar el paso con esta evidencia combinada; no se acredita una nueva ejecución de la prueba 16 ni un recorrido exclusivamente manual de todas las variantes.
 
-| Nº | Escenario | Resultado y evidencia | Pendiente manual final |
+| Nº | Escenario | Resultado y evidencia | Variante no repetida / cobertura conservada |
 | --- | --- | --- | --- |
 | 1 | Registro A/20 seeds | UI final: Defensa A entró automáticamente; contador 20. auth 18/18 y catalog contrastó los 20 con PLACES | Ninguno para este recorrido |
 | 2 | Favorito seed/orden/restauración | UI final: Teatro Colón pasó al primer lugar con corazón rojo seleccionado; quitar restauró Obelisco antes de Teatro. Suite favorites valida orden estable | Ninguno para este recorrido |
@@ -44,4 +44,12 @@ El ensayo UI final registró A, probó catálogo/favorito/alta/validación/edici
 - Foreground únicamente por acción; stop/blur/unmount/background, tokens y handles tardíos; calidad norte verdadero y precisión: revisados y suites aprobadas, hardware según reporte del usuario.
 - README documenta instalación/estado/estructura/dependencias reales, alcance local, seguridad educativa, límites y uso de IA. DEFENSA prepara credenciales/guion/archivos/hooks. Sin backend, mapas, tracking background, perfil ni nuevas features.
 
-**Conclusión de auditoría:** documentación y comprobación técnica final listas; 15/17 checks del paso 14 acreditados. Los dos checks de ejecución/ensayo manual completo permanecen pendientes. Para cerrarlos, repetir DEFENSA en Expo Go y registrar cada resultado final (especialmente reinicio, A/B/A, baja confirmada, enlaces ajenos, variantes inválidas y segundo tamaño). Conservar la evidencia controlada para fallos, sin exigir corromper datos reales. Transcribir resultados de VoiceOver si se realiza; no inventarlos.
+**Conclusión de auditoría inicial (antes de la confirmación de cierre de abajo):** documentación y comprobación técnica final listas; 15/17 checks del paso 14 acreditados. Los dos checks de ejecución/ensayo manual completo permanecen pendientes. Para cerrarlos, repetir DEFENSA en Expo Go y registrar cada resultado final (especialmente reinicio, A/B/A, baja confirmada, enlaces ajenos, variantes inválidas y segundo tamaño). Conservar la evidencia controlada para fallos, sin exigir corromper datos reales. Transcribir resultados de VoiceOver si se realiza; no inventarlos.
+
+## Actualización de cierre por el usuario
+
+El usuario informó haber llegado hasta la prueba 13 de la guía final de esta conversación: registro, catálogo/favoritos, validación/alta, edición/cancelación, reinicio, baja cancelada/confirmada, A/B/A y registro/login inválidos. Este reporte actualiza los pendientes correspondientes de la tabla histórica anterior; no es una observación directa del agente. Confirmó recordar la ejecución física previa de brújula y rechazo de permisos, que se conserva como evidencia sin exigir repetición tras los patches.
+
+Solicitó marcar todo como hecho después de discutir la posibilidad de omitir la prueba 16. Se registra como **cierre aceptado con cobertura técnica/histórica**, no como una prueba nueva realizada: otro tamaño final y VoiceOver real no informados. Las rutas directas ajenas/protegidas y errores visuales de storage tampoco tienen nueva confirmación manual; mantienen pruebas de dominio/resolvers y evidencia histórica.
+
+**Estado vigente:** paso 14 cerrado, **17/17 checks marcados** por autorización del usuario. La evidencia combina reporte manual, hardware previo, suites y revisión; conserva los límites anteriores sin inventar resultados.
